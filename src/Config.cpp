@@ -1,0 +1,3 @@
+
+int APP_VIEW = 0;
+int BRIGHTNESS = 10;
