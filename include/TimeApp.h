@@ -8,12 +8,13 @@
 class TimeApp 
 {
     private:
-        int ClockTheme = 1;
+        int clockTheme = 1;
         String repairDigit(int);
     public:
         void setup();
         void loop();
         void displayClock();
+        void changeTheme(int);
 };
 
 #endif
