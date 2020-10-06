@@ -17,16 +17,16 @@ const int NTP_PACKET_SIZE = 48; // NTP time is in the first 48 bytes of message
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
 time_t prevDisplay = 0; 
 
-void TimeApp:changeTheme(int themeId) 
-{
-    clockTheme = themeId;
-}
-
 String TimeApp::repairDigit(int digit) 
 {
     String repairedDigit = String(digit);
     if(digit < 10) repairedDigit = "0"+repairedDigit;
     return repairedDigit;
+}
+
+void TimeApp::changeTheme(int themeId) 
+{
+    clockTheme = themeId;
 }
 
 void TimeApp::displayClock()

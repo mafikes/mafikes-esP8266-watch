@@ -6,9 +6,11 @@
 #include <Display.h>
 #include <Wifi.h>
 #include <TimeApp.h>
+#include <WeatherApp.h>
 
 Wifi wifi;
 TimeApp timeApp;
+WeatherApp weatherApp;
 
 void setup() {
   Serial.begin(115200); // Web Server
@@ -19,13 +21,11 @@ void setup() {
   
   wifi.setup(); // Init wifi
   timeApp.setup(); // Init time
+  weatherApp.setup();
 }
 
 void loop() {
-  
-  // Display::getInstance().clear();
   wifi.loop();
-  timeApp.loop();
-
-  // drawText("MAFIKES", true, 0, 0);
+  weatherApp.print();
+  // timeApp.loop();
 }
