@@ -2,19 +2,21 @@
 #define TimeApp_h
 
 #include <WString.h>
-#include <Time.h>
-#include <TimeLib.h>
+#include <ApplicationView.h>
 
-class TimeApp 
+class TimeApp : public ApplicationView
 {
     private:
         int clockTheme = 1;
+        int clockColorActive = 0;
+        // DisplayColor clockColor = COLOR_WHITE;
         String repairDigit(int);
-    public:
-        void setup();
-        void loop();
-        void displayClock();
-        void changeTheme(int);
+        void displayClock(Display& display);
+    public:        
+        void changeColor();
+        void nextTheme();        
+        void beforeRender() override;
+        void render(Display& display) override;
 };
 
 #endif

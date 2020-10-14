@@ -3,29 +3,50 @@
 #include <SPI.h>
 #include <Config.h>
 
+#include <ApplicationManager.h>
 #include <Display.h>
 #include <Wifi.h>
 #include <TimeApp.h>
 #include <WeatherApp.h>
+#include <Temperature.h>
+#include <TouchButton.h>
 
 Wifi wifi;
-TimeApp timeApp;
-WeatherApp weatherApp;
+// TouchButton touchButton;
+// ApplicationManager& applicationManager = ApplicationManager::getInstance();
+ApplicationManager applicationManager;
 
 void setup() {
-  Serial.begin(115200); // Web Server
-  Serial.begin(9800); // WS d1 mini
+  delay(1000);
 
-  Display::getInstance().clear(); 
-  Display::getInstance().showLogo(); // show on dispaly logo intro
+  // Reset ESP watchdog
+  // ESP.wdtDisable();
+  // ESP.wdtEnable(WDTO_8S);
+
+  Serial1.begin(115200);
+  Serial.begin(9800); // WS d1 mini
   
-  wifi.setup(); // Init wifi
-  timeApp.setup(); // Init time
-  weatherApp.setup();
+  Display::getInstance().showLogo();
+  Display::getInstance().showLogo(); // show on dispaly logo intro
+  Display::getInstance().clear();
+
+  wifi.setup(); // Init Wifi
+  applicationManager.setup(); // Init Application Manager
+
+  // timeApp.setup(); // Init Time
+  // weatherApp.setup(); // Init Weather
+  // temperature.setup(); // Init Temperature DTH 
+
 }
 
+
 void loop() {
+  Serial.println(ESP.getFreeHeap());
   wifi.loop();
-  weatherApp.print();
+  applicationManager.loop();
+
+  // temperature.loop();
+  // temperature.showTemperature();
+  // weatherApp.print();
   // timeApp.loop();
 }

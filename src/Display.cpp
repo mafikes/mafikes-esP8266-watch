@@ -5,6 +5,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Config.h>
+#include <Colors.h>
 
 // MATRIX
 #define MATRIX_PIN 2
@@ -21,11 +22,11 @@ void Display::setup() {
     matrix.begin();  
     matrix.setTextWrap(false);
     
-    matrix.setFont(&TomThumb);
-    matrix.setTextColor(matrix.Color(255,255,255));
+    // matrix.setFont(&TomThumb);
+    // matrix.setTextColor(color(COLOR_WHITE));
     setBrightness(BRIGHTNESS);
 
-    clear();
+    // clear();
 }
 
 void Display::refresh() {
@@ -44,8 +45,7 @@ void Display::setBrightness(int value) {
 
 uint32_t Display::color(DisplayColor color)
 {
-  return matrix.Color(color.red, color.green, color.blue);
-    
+    return matrix.Color(color.red, color.green, color.blue);
 }
 
 void Display::drawText(String text, bool smallText, DisplayPosition pos, DisplayColor colorText) {
@@ -63,46 +63,101 @@ void Display::drawText(String text, bool smallText, DisplayPosition pos, Display
     matrix.show();
 }
 
-void Display::showLogo() {
-    int height = 6;
+void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int16_t w, int16_t h) 
+{
+    uint16_t RGB_bmp_fixed[w * h];
+
+    for (uint16_t pixel = 0; pixel < w * h; pixel++) {
+        uint32_t a8b8g8r8 = bitmap[pixel];
+        uint8_t r5 = ((a8b8g8r8 >>  0) & 0xFF) >> (8 - 5);
+        uint8_t g6 = ((a8b8g8r8 >>  8) & 0xFF) >> (8 - 6);
+        uint8_t b5 = ((a8b8g8r8 >> 16) & 0xFF) >> (8 - 5);
+        RGB_bmp_fixed[pixel] = (r5 << 11) | (g6 << 5) | b5;
+    }
+    
+    matrix.drawRGBBitmap(x, y, RGB_bmp_fixed, w, h);  
+    matrix.drawFastVLine(8, 0, 8, 0);
+}
+
+void Display::reset() 
+{
+    lastShowedIcon = 0;
+    iconAnimationRepeated = 0;
+}
+
+void Display::showIcon(const uint32_t bitmap[][64], int iconSize, int repeatAnimation) 
+{
+    if(iconSize > 1 && iconAnimationRepeated < repeatAnimation) {
+        fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
+        Serial.println(iconSize);
+
+        lastShowedIcon++;
+        if (lastShowedIcon >= iconSize) { // animation is showed full, start it from zero
+            lastShowedIcon = 0;
+            iconAnimationRepeated++;
+        }
+    } else {
+        fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
+    }
+}
+
+void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor colorText) {
     matrix.setFont(&TomThumb);
-    matrix.setTextColor(matrix.Color(255,255,255));
-    matrix.setCursor(2, height);
+    matrix.setCursor(pos.x+8, pos.y+6);
+
+    matrix.print(text);  
+
+    matrix.setTextColor(color(colorText));    
+}
+
+void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize, String text, DisplayPosition position, DisplayColor textColor) 
+{  
+    fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
+
+    lastShowedIcon++;
+    if (lastShowedIcon >= iconSize) {
+        lastShowedIcon = 0;
+    }
+
+    matrix.setFont(&TomThumb);
+    matrix.setCursor(position.x+8, position.y+6);
+    matrix.setTextColor(color(textColor));
+    matrix.print(text);
+
+    matrix.show(); 
+    delay(300);
+}
+
+void Display::show() 
+{
+    matrix.show();
+}
+
+void Display::showLogo() {
+    matrix.clear();
+    matrix.setBrightness(BRIGHTNESS);
+
+    matrix.setFont(&TomThumb);
+    matrix.setTextColor(color(COLOR_WHITE));
+    matrix.setCursor(2, 6);
     matrix.print("M");
 
-    matrix.setTextColor(matrix.Color(255,0,0));
-    matrix.setCursor(6, height);
+    matrix.setTextColor(color(COLOR_RED));
+    matrix.setCursor(8, 6);
     matrix.print("A");
 
-    matrix.setTextColor(matrix.Color(255,255,255));
-    matrix.setCursor(10, height);
-    matrix.print("F");
-
-    matrix.setTextColor(matrix.Color(255,255,255));
-    matrix.setCursor(14, height);
-    matrix.print("I");
-
-    matrix.setTextColor(matrix.Color(255,255,255));
-    matrix.setCursor(18, height);
-    matrix.print("K");
-
-    matrix.setTextColor(matrix.Color(255,255,255));
-    matrix.setCursor(22, height);
-    matrix.print("E");   
-
-    matrix.setTextColor(matrix.Color(255,255,255));
-    matrix.setCursor(26, height);
-    matrix.print("S"); 
+    matrix.setTextColor(color(COLOR_WHITE));
+    matrix.setCursor(12, 6);
+    matrix.print("FIKES");
 
     drawLine(28, 6, 2, 6, {200,200,200});
-    drawPixel(0, 0, {255,0,0});
-    drawPixel(0, 7, {255,0,0});
-    drawPixel(31, 0, {255,0,0});
-    drawPixel(31, 7, {255,0,0});
 
-    matrix.show();  
+    drawPixel(0, 0, COLOR_RED);
+    drawPixel(0, 7, COLOR_RED);
+    drawPixel(31, 0, COLOR_RED);
+    drawPixel(31, 7, COLOR_RED);
 
-    matrix.setFont();
+    matrix.show();
 }
 
 void Display::scrollText(String text, DisplayColor textColor) {

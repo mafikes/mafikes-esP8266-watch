@@ -2,16 +2,18 @@
 #define WeatherApp_h
 
 #include <WString.h>
+#include <ApplicationView.h>
 
-class WeatherApp 
+class WeatherApp : public ApplicationView
 {
     private:
         float temperature = 0;        
-        String icon;
+        String temperature_icon;    
     public:
-        void setup();
         void askServer();
-        void print();
+        void getIcon();
+        void beforeRender() override;
+        void render(Display& display) override;
 };
 
 #endif

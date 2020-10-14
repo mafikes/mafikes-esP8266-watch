@@ -1,7 +1,6 @@
 #include <WString.h>
 
-int APP_VIEW = 0;
 int BRIGHTNESS = 10;
 
-String API_WEATHER_KEY = "";  
-String API_WEATHER_LOCATION = "";
+String API_WEATHER_KEY = "8dd73b7ce2fe96078b3b0f0992305835";  
+String API_WEATHER_LOCATION = "3067696";

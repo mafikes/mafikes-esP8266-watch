@@ -1,14 +1,12 @@
 #include <TimeApp.h>
 #include <time.h>
 #include <Config.h>
-#include <Display.h>
 
 #include <TimeLib.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
 static const char ntpServerName[] = "europe.pool.ntp.org";
-// static const char ntpServerName[] = "tik.cesnet.cz";
 
 WiFiUDP Udp;
 const int timeZone = 2;     // Central European Time
@@ -22,23 +20,6 @@ String TimeApp::repairDigit(int digit)
     String repairedDigit = String(digit);
     if(digit < 10) repairedDigit = "0"+repairedDigit;
     return repairedDigit;
-}
-
-void TimeApp::changeTheme(int themeId) 
-{
-    clockTheme = themeId;
-}
-
-void TimeApp::displayClock()
-{
-    Display::getInstance().clear();
-    DisplayColor white = {255, 255, 255};
-
-    if(clockTheme == 0) { 
-        Display::getInstance().drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, white);
-    } else if(clockTheme == 1) {
-        Display::getInstance().drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), true, {3, 0}, white);
-    }
 }
 
 void sendNTPpacket(IPAddress &address)
@@ -88,25 +69,63 @@ time_t getNtpTime()
   }
 
   Serial.println("No NTP Response :-(");
-  return 0; // return 0 if unable to get the time
+  
+  return 0; 
 }
 
-void TimeApp::setup() {
+void TimeApp::beforeRender() {
     Udp.begin(localPort);
+    
     // Serial.println("Local port: ");
     // Serial.println(Udp.localPort());
     // Serial.println("waiting for sync");
+
     setSyncProvider(getNtpTime);
     setSyncInterval(300);
 }
 
+// void TimeApp::changeColor()
+// {
+//     clockColorActive++;
 
-void TimeApp::loop() 
+//     if(clockColorActive == 1) {
+//       clockColor = COLOR_RED;
+//     } else if(clockColorActive == 2) {
+//       clockColor = COLOR_YELLOW;
+//     } else if(clockColorActive == 3) {
+//       clockColor = COLOR_GREEN;
+//     } else if(clockColorActive == 4) {
+//       clockColor = COLOR_BLUE;      
+//     } else {
+//       clockColorActive = 0;
+//       clockColor = COLOR_WHITE;
+//     }
+// }
+
+void TimeApp::nextTheme() 
+{
+    clockTheme++;
+}
+
+void TimeApp::displayClock(Display& display)
+{
+    display.clear();
+
+    if(clockTheme == 0) { 
+        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, {255, 255, 255});
+    } else if(clockTheme == 1) {
+        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), true, {2, 0}, {255, 255, 255});
+    }
+}
+
+void TimeApp::render(Display& display) 
 {
     if (timeStatus() != timeNotSet) {
         if (now() != prevDisplay) { //update the display only if time has changed
-            prevDisplay = now();
-            displayClock();
+            prevDisplay = now();            
+            // displayClock(display);
+            display.clear();
+            display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, {255, 255, 255});
         }
     }
 }
