@@ -7,41 +7,79 @@
 // Applications 
 #include <WeatherApp.h>
 #include <TimeApp.h>
+#include <TouchButton.h>
 
-ApplicationView* ApplicationManager::getActiveApp() 
+#define BTN1_PIN 13
+#define BTN2_PIN 12
+#define BTN3_PIN 14
+
+void ApplicationManager::btn1_process()
 {
-    return applications[activeAppView];
+    application->btn1_process();
+}
+
+void ApplicationManager::btn2_process()
+{
+    nextApp();
+}
+
+void ApplicationManager::btn3_process()
+{
+    application->btn3_process();
 }
 
 void ApplicationManager::setup() 
 {
-    applications[0] = new TimeApp();
-    applications[1] = new WeatherApp();
+    pinMode(BTN1_PIN, INPUT);
+    pinMode(BTN2_PIN, INPUT);
+    pinMode(BTN3_PIN, INPUT);
+
+    application = new TimeApp();
+    application->beforeRender();
 }
 
 void ApplicationManager::nextApp() 
 {
-    nextAppView++;
+    application->clear();  
+    activeAppView++;
+
+    if(activeAppView == 1) {
+        application = new WeatherApp();
+    } else {
+        application = new TimeApp();
+        activeAppView = 0;
+    }
+
+    application->beforeRender();
 }   
 
 void ApplicationManager::loop()
 {
-    // if(nextAppView != activeAppView) {
-        // application->clear();  
-        // activeAppView = nextAppView;
-        // runBeforeRender = true;
-    // }
+    int btn1State = digitalRead(BTN1_PIN);
+    int btn2State = digitalRead(BTN2_PIN);
+    int btn3State = digitalRead(BTN3_PIN);
 
-    // application = getActiveApp();
-    
-    // if(application) {        
-    //     if(runBeforeRender) {
-    //         application->beforeRender();
-    //         runBeforeRender = false;
-    //     }
+    if (btn1LastState == LOW && btn1State == HIGH)
+    {
+        btn1_process();
+        Serial.println("TOUCHED 1");
+    } 
 
-    //     application->render(Display::getInstance());
-    // } else {
-    //     Display::getInstance().drawText("ERROR", true, {0,0}, {255, 0, 0});
-    // }
+    if (btn2LastState == LOW && btn2State == HIGH)
+    {
+        nextApp();
+        Serial.println("TOUCHED 2");
+    } 
+
+    if (btn3LastState == LOW && btn3State == HIGH)
+    {
+        btn3_process();
+        Serial.println("TOUCHED 3");
+    } 
+
+    btn1LastState = btn1State;
+    btn2LastState = btn2State;
+    btn3LastState = btn3State;
+
+    application->render(Display::getInstance());
 } 

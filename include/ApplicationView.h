@@ -8,6 +8,8 @@ class ApplicationView {
 
     public:
         virtual ~ApplicationView() {}
+        virtual void btn1_process() {}
+        virtual void btn3_process() {}
         virtual void beforeRender(){}     
         virtual void render(Display&) = 0;     
         virtual void clear() {}     

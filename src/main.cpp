@@ -9,12 +9,10 @@
 #include <TimeApp.h>
 #include <WeatherApp.h>
 #include <Temperature.h>
-#include <TouchButton.h>
 
 Wifi wifi;
 // TouchButton touchButton;
-// ApplicationManager& applicationManager = ApplicationManager::getInstance();
-ApplicationManager applicationManager;
+ApplicationManager& applicationManager = ApplicationManager::getInstance();
 
 void setup() {
   delay(1000);
@@ -32,6 +30,7 @@ void setup() {
 
   wifi.setup(); // Init Wifi
   applicationManager.setup(); // Init Application Manager
+  // touchButton.setup();
 
   // timeApp.setup(); // Init Time
   // weatherApp.setup(); // Init Weather
@@ -41,7 +40,7 @@ void setup() {
 
 
 void loop() {
-  Serial.println(ESP.getFreeHeap());
+  // Serial.println(ESP.getFreeHeap());
   wifi.loop();
   applicationManager.loop();
 

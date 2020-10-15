@@ -42,8 +42,6 @@ void WeatherApp::askServer()
 void WeatherApp::beforeRender() 
 {
     askServer();
-
-    //TODO: Set for asking every 3 minutes
 } 
 
 void WeatherApp::render(Display& display) 
@@ -70,5 +68,5 @@ void WeatherApp::render(Display& display)
     
     display.drawTextWithIcon(String(temperature) + "C", {2, 0}, COLOR_WHITE);
     display.show();
-    delay(500);
+    // delay(500);
 }

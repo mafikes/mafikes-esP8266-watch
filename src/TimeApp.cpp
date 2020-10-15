@@ -84,23 +84,25 @@ void TimeApp::beforeRender() {
     setSyncInterval(300);
 }
 
-// void TimeApp::changeColor()
-// {
-//     clockColorActive++;
+void TimeApp::changeColor()
+{
+    clockColorActive++;
 
-//     if(clockColorActive == 1) {
-//       clockColor = COLOR_RED;
-//     } else if(clockColorActive == 2) {
-//       clockColor = COLOR_YELLOW;
-//     } else if(clockColorActive == 3) {
-//       clockColor = COLOR_GREEN;
-//     } else if(clockColorActive == 4) {
-//       clockColor = COLOR_BLUE;      
-//     } else {
-//       clockColorActive = 0;
-//       clockColor = COLOR_WHITE;
-//     }
-// }
+    if(clockColorActive == 1) {
+      clockColor = COLOR_RED;
+    } else if(clockColorActive == 2) {
+      clockColor = COLOR_YELLOW;
+    } else if(clockColorActive == 3) {
+      clockColor = COLOR_ORANGE;
+    } else if(clockColorActive == 4) {
+      clockColor = COLOR_BLUE;      
+    } else if(clockColorActive == 4) {
+      clockColor = COLOR_GREEN;
+    } else {
+      clockColorActive = 0;
+      clockColor = COLOR_WHITE;
+    }
+}
 
 void TimeApp::nextTheme() 
 {
@@ -111,21 +113,25 @@ void TimeApp::displayClock(Display& display)
 {
     display.clear();
 
-    if(clockTheme == 0) { 
-        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, {255, 255, 255});
-    } else if(clockTheme == 1) {
-        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), true, {2, 0}, {255, 255, 255});
+    if(clockTheme == 1) {
+        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), true, {2, 0}, clockColor);
+    } else {
+        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, clockColor);
+        clockTheme = 0;
     }
 }
 
 void TimeApp::render(Display& display) 
 {
-    if (timeStatus() != timeNotSet) {
-        if (now() != prevDisplay) { //update the display only if time has changed
-            prevDisplay = now();            
-            // displayClock(display);
-            display.clear();
-            display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, {255, 255, 255});
-        }
-    }
+    displayClock(display);
+}
+
+void TimeApp::btn1_process()
+{
+    changeColor();
+}
+
+void TimeApp::btn3_process()
+{
+    nextTheme();
 }

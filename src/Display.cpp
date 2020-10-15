@@ -125,7 +125,7 @@ void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize
     matrix.print(text);
 
     matrix.show(); 
-    delay(300);
+    // delay(300); // TODO: rewrite for delay for millis
 }
 
 void Display::show() 
