@@ -14,8 +14,6 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
-Helper helper;
-
 void Temperature::beforeRender()
 {
     dht.begin();
@@ -26,7 +24,7 @@ void Temperature::showTemperature(Display& display)
 {  
     display.clear(); 
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
-    display.drawTextWithIcon(helper.getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 }
 
@@ -34,7 +32,7 @@ void Temperature::showHumidity(Display& display)
 {
     display.clear();
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0); 
-    display.drawTextWithIcon(helper.getStringRounded(humidity) + "%", {6, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(humidity) + "%", {2, 0}, COLOR_WHITE);
     display.show();
 }
 
@@ -42,7 +40,7 @@ void Temperature::showHeatIndex(Display& display)
 {
     display.clear(); 
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
-    display.drawTextWithIcon(helper.getStringRounded(heatIndex) + "C", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(heatIndex) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 } 
 

@@ -3,10 +3,17 @@
 
 #include <WString.h>
 
-class Helper 
-{
+class Helper {
     private:
+        Helper() {}
+        Helper(Helper const&);
+        void operator = (Helper const&);
     public:
+        static Helper& getInstance() {
+            static Helper instance;
+            return instance;
+        }    
+
         String getStringRounded(float);
 };
 

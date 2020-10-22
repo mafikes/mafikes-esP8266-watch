@@ -4,6 +4,7 @@
 #include <Colors.h>
 #include <WString.h>
 #include <Icons.h>
+#include <Helper.h>
 
 #include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
@@ -66,7 +67,7 @@ void WeatherApp::render(Display& display)
       display.showIcon(ICON_SUN, arrayLength(ICON_SUN), 3);
     }
     
-    display.drawTextWithIcon(String(temperature) + "C", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
     display.show();
     // delay(500);
 }
