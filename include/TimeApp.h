@@ -14,9 +14,6 @@ class TimeApp : public ApplicationView
         String repairDigit(int);
         void displayClock(Display& display);
     public:        
-        void changeColor();
-        void nextTheme();
-
         void btn1_process() override;        
         void btn3_process() override;        
         void beforeRender() override;

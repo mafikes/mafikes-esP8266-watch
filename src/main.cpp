@@ -6,12 +6,10 @@
 #include <ApplicationManager.h>
 #include <Display.h>
 #include <Wifi.h>
-#include <TimeApp.h>
-#include <WeatherApp.h>
-#include <Temperature.h>
+#include <NTP.h>
 
 Wifi wifi;
-// TouchButton touchButton;
+NTP ntp;
 ApplicationManager& applicationManager = ApplicationManager::getInstance();
 
 void setup() {
@@ -29,23 +27,14 @@ void setup() {
   Display::getInstance().clear();
 
   wifi.setup(); // Init Wifi
+  ntp.setup(); // Init NTP Time 
   applicationManager.setup(); // Init Application Manager
-  // touchButton.setup();
-
-  // timeApp.setup(); // Init Time
-  // weatherApp.setup(); // Init Weather
-  // temperature.setup(); // Init Temperature DTH 
-
 }
 
 
 void loop() {
-  // Serial.println(ESP.getFreeHeap());
+  // SHOW to serial FREE RAM
+  // Serial.println(ESP.getFreeHeap());  
   wifi.loop();
   applicationManager.loop();
-
-  // temperature.loop();
-  // temperature.showTemperature();
-  // weatherApp.print();
-  // timeApp.loop();
 }

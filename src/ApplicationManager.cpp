@@ -7,7 +7,7 @@
 // Applications 
 #include <WeatherApp.h>
 #include <TimeApp.h>
-#include <TouchButton.h>
+#include <Temperature.h>
 
 #define BTN1_PIN 13
 #define BTN2_PIN 12
@@ -45,6 +45,8 @@ void ApplicationManager::nextApp()
 
     if(activeAppView == 1) {
         application = new WeatherApp();
+    } else if(activeAppView == 2) {
+        application = new Temperature();
     } else {
         application = new TimeApp();
         activeAppView = 0;

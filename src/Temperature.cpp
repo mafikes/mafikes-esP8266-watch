@@ -16,38 +16,38 @@ DHT dht(DHTPIN, DHTTYPE);
 
 Helper helper;
 
-void Temperature::setup() 
+void Temperature::beforeRender()
 {
     dht.begin();
     pinMode(DHTPIN, INPUT_PULLUP);
-}   
+}
 
-void Temperature::showTemperature()
+void Temperature::showTemperature(Display& display)
 {  
-    Display::getInstance().clear(); 
-    Display::getInstance().showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
-    Display::getInstance().drawTextWithIcon(helper.getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
-    Display::getInstance().show();
+    display.clear(); 
+    display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
+    display.drawTextWithIcon(helper.getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
+    display.show();
 }
 
-void Temperature::showHumidity() 
+void Temperature::showHumidity(Display& display) 
 {
-    Display::getInstance().clear();
-    Display::getInstance().showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0); 
-    Display::getInstance().drawTextWithIcon(String(humidity, 1) + "%", {6, 0}, COLOR_WHITE);
-    Display::getInstance().show();
+    display.clear();
+    display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0); 
+    display.drawTextWithIcon(helper.getStringRounded(humidity) + "%", {6, 0}, COLOR_WHITE);
+    display.show();
 }
 
-void Temperature::showHeatIndex()
+void Temperature::showHeatIndex(Display& display)
 {
-    Display::getInstance().clear(); 
-    Display::getInstance().showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
-    Display::getInstance().drawTextWithIcon(helper.getStringRounded(heatIndex) + "C", {2, 0}, COLOR_WHITE);
-    Display::getInstance().show();
+    display.clear(); 
+    display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
+    display.drawTextWithIcon(helper.getStringRounded(heatIndex) + "C", {2, 0}, COLOR_WHITE);
+    display.show();
 } 
 
 // TODO: calculate it every min.3 seconds
-void Temperature::loop() 
+void Temperature::readData() 
 {    
     humidity = dht.readHumidity();
     temperature = dht.readTemperature();
@@ -61,4 +61,23 @@ void Temperature::loop()
     }
 
     heatIndex = dht.computeHeatIndex(temperature, humidity, false);
+}
+
+void Temperature::btn1_process()
+{
+    view++;
+}
+
+void Temperature::render(Display& display) 
+{
+    readData();
+
+    if(view == 1) {
+        showHeatIndex(display);
+    } else if(view == 2) {
+        showHumidity(display);
+    } else {
+        showTemperature(display);
+        view = 0;
+    }
 }
