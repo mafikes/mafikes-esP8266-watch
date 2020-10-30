@@ -1,6 +1,6 @@
 #include <WString.h>
 
-int BRIGHTNESS = 10;
+int BRIGHTNESS = 25;
 
 int WEATHER_TEMPERATURE = 0;
 

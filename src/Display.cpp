@@ -38,7 +38,8 @@ void Display::clear() {
     matrix.fillScreen(0); 
 }
 
-void Display::setBrightness(int value) {
+void Display::setBrightness(int value) 
+{
     BRIGHTNESS = value;
     matrix.setBrightness(BRIGHTNESS);
 }

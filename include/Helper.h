@@ -14,7 +14,7 @@ class Helper {
             return instance;
         }    
 
-        String getStringRounded(float);
+        String getStringRounded(float, int, int);
 };
 
 #endif

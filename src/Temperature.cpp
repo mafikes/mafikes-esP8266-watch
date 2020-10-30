@@ -7,7 +7,7 @@
 #include "DHT.h"
 #include <Helper.h>
 
-#define DHTPIN 4
+#define DHTPIN 14
 #define DHTTYPE DHT11
 
 #define arrayLength(array) (sizeof((array))/sizeof((array)[0]))
@@ -24,7 +24,7 @@ void Temperature::showTemperature(Display& display)
 {  
     display.clear(); 
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 1) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 }
 
@@ -32,7 +32,7 @@ void Temperature::showHumidity(Display& display)
 {
     display.clear();
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0); 
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(humidity) + "%", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(humidity, 5, 1) + "%", {2, 0}, COLOR_WHITE);
     display.show();
 }
 
@@ -40,7 +40,7 @@ void Temperature::showHeatIndex(Display& display)
 {
     display.clear(); 
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(heatIndex) + "C", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(heatIndex, 5, 1) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 } 
 

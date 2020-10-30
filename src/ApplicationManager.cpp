@@ -8,10 +8,12 @@
 #include <WeatherApp.h>
 #include <TimeApp.h>
 #include <Temperature.h>
+#include <BrightnessApp.h>
 
+// Buttons PIN
 #define BTN1_PIN 13
 #define BTN2_PIN 12
-#define BTN3_PIN 14
+#define BTN3_PIN 15
 
 void ApplicationManager::btn1_process()
 {
@@ -47,6 +49,8 @@ void ApplicationManager::nextApp()
         application = new WeatherApp();
     } else if(activeAppView == 2) {
         application = new Temperature();
+    } else if(activeAppView == 3) {
+        application = new BrightnessApp();
     } else {
         application = new TimeApp();
         activeAppView = 0;

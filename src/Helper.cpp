@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include "stdlib_noniso.h"
 
-String Helper::getStringRounded(float value) 
+String Helper::getStringRounded(float value, int width = 5, int prec = 1) 
 {
     char buffer[10];
-    String textValue = dtostrf(value, 5, 1, buffer);
+    String textValue = dtostrf(value, width, prec, buffer);
     return textValue;
 }

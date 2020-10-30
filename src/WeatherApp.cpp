@@ -67,7 +67,7 @@ void WeatherApp::render(Display& display)
       display.showIcon(ICON_SUN, arrayLength(ICON_SUN), 3);
     }
     
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature) + "C", {2, 0}, COLOR_WHITE);
+    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 1) + "C", {2, 0}, COLOR_WHITE);
     display.show();
     // delay(500);
 }
