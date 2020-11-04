@@ -16,31 +16,24 @@ void BrightnessApp::beforeRender()
 
 void BrightnessApp::btn1_process() 
 {
-    int newBrightness = BRIGHTNESS - 25;
-    
-    if(newBrightness == 0) {
-        Display::getInstance().setBrightness(1);
-    } else if(newBrightness >= 1) { 
-        Display::getInstance().setBrightness(newBrightness);
-    }
+    activeBrightness--;
+    if(activeBrightness < 0) activeBrightness = 0;
+    Display::getInstance().setBrightness(brightness[activeBrightness]);
 } 
 
 void BrightnessApp::btn3_process() 
 {
-    if(BRIGHTNESS == 1) BRIGHTNESS = 0;
-
-    int newBrightness = BRIGHTNESS + 25;
-    
-    if(newBrightness <= 250) {
-        Display::getInstance().setBrightness(newBrightness);
-    }
+    activeBrightness++;
+    if(activeBrightness > 10) activeBrightness = 10;
+    Display::getInstance().setBrightness(brightness[activeBrightness]);
 } 
 
 void BrightnessApp::render(Display& display) 
 {
-    percentage = (BRIGHTNESS/250.0f)*100.0f;
-    if(BRIGHTNESS == 1) percentage = 1;
+    percentage = ((float)activeBrightness/(float)arrayLength(brightness))*100.0f;
+    // if(BRIGHTNESS == 1) percentage = 1;
 
+    Serial.println(arrayLength(brightness));
     Serial.println(percentage);
 
     display.clear(); 
