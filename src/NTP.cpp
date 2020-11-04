@@ -1,10 +1,11 @@
 #include <NTP.h>
 #include <time.h>
+
 #include <TimeLib.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-static const char ntpServerName[] = "europe.pool.ntp.org";
+static const char ntpServerName[] = "0.cz.pool.ntp.org";
 
 WiFiUDP Udp;
 const int timeZone = 2;     // Central European Time
@@ -47,8 +48,7 @@ time_t getNtpTime()
   while (millis() - beginWait < 1500) {
     int size = Udp.parsePacket();
     if (size >= NTP_PACKET_SIZE) {
-      
-      // Serial.println("Receive NTP Response");
+      Serial.println("Receive NTP Response");
       Udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
       unsigned long secsSince1900;
       // convert four bytes starting at location 40 to a long integer
@@ -66,12 +66,12 @@ time_t getNtpTime()
 }
 
 void NTP::setup() {
-    Udp.begin(localPort);
-    
     // Serial.println("Local port: ");
     // Serial.println(Udp.localPort());
     // Serial.println("waiting for sync");
 
+    Udp.begin(localPort);
+    
     setSyncProvider(getNtpTime);
     setSyncInterval(300);
 }
