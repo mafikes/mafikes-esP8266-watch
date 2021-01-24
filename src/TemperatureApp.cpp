@@ -1,4 +1,4 @@
-#include <Temperature.h>
+#include <TemperatureApp.h>
 #include <Config.h>
 #include <Display.h>
 #include <Colors.h>
@@ -14,13 +14,18 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
-void Temperature::beforeRender()
+TemperatureApp::TemperatureApp(int showView)
+{
+    view = showView;
+}
+
+void TemperatureApp::beforeRender()
 {
     dht.begin();
     pinMode(DHTPIN, INPUT_PULLUP);
 }
 
-void Temperature::showTemperature(Display& display)
+void TemperatureApp::showTemperature(Display& display)
 {  
     display.clear(); 
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
@@ -28,7 +33,7 @@ void Temperature::showTemperature(Display& display)
     display.show();
 }
 
-void Temperature::showHumidity(Display& display) 
+void TemperatureApp::showHumidity(Display& display) 
 {
     display.clear();
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0); 
@@ -36,7 +41,7 @@ void Temperature::showHumidity(Display& display)
     display.show();
 }
 
-void Temperature::showHeatIndex(Display& display)
+void TemperatureApp::showHeatIndex(Display& display)
 {
     display.clear(); 
     display.showIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE), 0);
@@ -44,8 +49,7 @@ void Temperature::showHeatIndex(Display& display)
     display.show();
 } 
 
-// TODO: calculate it every min.3 seconds
-void Temperature::readData() 
+void TemperatureApp::readData() 
 {    
     humidity = dht.readHumidity();
     temperature = dht.readTemperature();
@@ -61,12 +65,7 @@ void Temperature::readData()
     heatIndex = dht.computeHeatIndex(temperature, humidity, false);
 }
 
-void Temperature::btn1_process()
-{
-    view++;
-}
-
-void Temperature::render(Display& display) 
+void TemperatureApp::render(Display& display) 
 {
     readData();
 

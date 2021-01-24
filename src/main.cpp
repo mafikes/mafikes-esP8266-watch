@@ -13,14 +13,8 @@ NTP ntp;
 ApplicationManager& applicationManager = ApplicationManager::getInstance();
 
 void setup() {
-  delay(1000);
-
-  // Reset ESP watchdog
-  // ESP.wdtDisable();
-  // ESP.wdtEnable(WDTO_8S);
-
-  Serial1.begin(115200);
-  Serial.begin(9800); // WS d1 mini
+  delay(2000);
+  Serial.begin(9600); // WS d1 mini
   
   Display::getInstance().showLogo();
   Display::getInstance().showLogo(); // show on dispaly logo intro
@@ -29,12 +23,20 @@ void setup() {
   wifi.setup(); // Init Wifi
   ntp.setup(); // Init NTP Time 
   applicationManager.setup(); // Init Application Manager
+
+  // tickerSwitchAppView.start();
 }
 
+// void switchAppView() {
+  // applicationManager.nextApp();
+// }
 
 void loop() {
   // SHOW to serial FREE RAM
-  // Serial.println(ESP.getFreeHeap());  
+  // Serial.println(ESP.getFreeHeap());
+
+  // tickerSwitchAppView.update();
+
   wifi.loop();
   applicationManager.loop();
 }

@@ -19,9 +19,9 @@ void TimeApp::displayClock(Display& display)
     display.clear();
 
     if(clockTheme == 1) {
-        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), true, {2, 0}, clockColor);
+        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), false, {2, 0}, clockColor);
     } else {
-        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), true, {8, 0}, clockColor);
+        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), false, {8, 0}, clockColor);
         clockTheme = 0;
     }
 }

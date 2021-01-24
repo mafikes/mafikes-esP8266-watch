@@ -3,17 +3,36 @@
 #include <Config.h>
 #include <Display.h>
 #include <WString.h>
+#include <Ticker.h>
 
 // Applications 
 #include <WeatherApp.h>
 #include <TimeApp.h>
-#include <Temperature.h>
+#include <TemperatureApp.h>
 #include <BrightnessApp.h>
+#include <ShowTextApp.h>
+#include "Display.h"
+#include "Settings.h"
 
 // Buttons PIN
 #define BTN1_PIN 13
 #define BTN2_PIN 12
 #define BTN3_PIN 15
+
+void switchAppView();
+
+// Ticker
+Ticker tickerSwitchAppView(switchAppView, 30000);
+
+void switchAppView() 
+{
+    ApplicationManager::getInstance().nextApp();
+}
+
+void ApplicationManager::setBrightness(int value)
+{   
+    Display::getInstance().setBrightness(value);
+}
 
 void ApplicationManager::btn1_process()
 {
@@ -22,7 +41,8 @@ void ApplicationManager::btn1_process()
 
 void ApplicationManager::btn2_process()
 {
-    nextApp();
+    tickerSwitchAppView.resume();
+    nextApp(true);
 }
 
 void ApplicationManager::btn3_process()
@@ -36,11 +56,21 @@ void ApplicationManager::setup()
     pinMode(BTN2_PIN, INPUT);
     pinMode(BTN3_PIN, INPUT);
 
+    // Start Ticker
+    tickerSwitchAppView.start();
+
+    // Start first App
     application = new TimeApp();
     application->beforeRender();
 }
 
-void ApplicationManager::nextApp() 
+void ApplicationManager::showText(String showText)
+{
+    application->clear();
+    application = new ShowTextApp(showText, true, 100, COLOR_WHITE);
+}
+
+void ApplicationManager::nextApp(bool fromButton) 
 {
     application->clear();  
     activeAppView++;
@@ -48,9 +78,13 @@ void ApplicationManager::nextApp()
     if(activeAppView == 1) {
         application = new WeatherApp();
     } else if(activeAppView == 2) {
-        application = new Temperature();
+        application = new TemperatureApp(0); // Local temperature
     } else if(activeAppView == 3) {
+        application = new TemperatureApp(2); // Humidity
+    } else if(activeAppView == 4 && fromButton) {
         application = new BrightnessApp();
+    } else if(activeAppView == 5 && fromButton) {
+        application = new ShowTextApp("IP:" + IP_ADDRESS, false, 120, COLOR_RED);
     } else {
         application = new TimeApp();
         activeAppView = 0;
@@ -61,6 +95,8 @@ void ApplicationManager::nextApp()
 
 void ApplicationManager::loop()
 {
+    tickerSwitchAppView.update();
+
     int btn1State = digitalRead(BTN1_PIN);
     int btn2State = digitalRead(BTN2_PIN);
     int btn3State = digitalRead(BTN3_PIN);

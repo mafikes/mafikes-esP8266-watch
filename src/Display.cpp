@@ -1,5 +1,6 @@
 #include <Display.h>
 #include <Fonts/TomThumb.h>
+#include <Fonts/Picopixel.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
@@ -11,7 +12,9 @@
 #define MATRIX_PIN 2
 #define MATRIX_WIDTH 32
 #define MATRIX_HEIGHT 8
-#define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_RIGHT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE
+// #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_RIGHT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE
+#define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG
+// #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG
 #define MATRIX_TYPE NEO_GRB + NEO_KHZ800
 
 Display::Display() : matrix(MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_PIN, MATRIX_MODE, MATRIX_TYPE) {    
@@ -49,17 +52,17 @@ uint32_t Display::color(DisplayColor color)
     return matrix.Color(color.red, color.green, color.blue);
 }
 
-void Display::drawText(String text, bool smallText, DisplayPosition pos, DisplayColor colorText) {
-    if (smallText) {
-        matrix.setFont(&TomThumb);
-        matrix.setCursor(pos.x, pos.y+6);
-    }else{
+void Display::drawText(String text, bool defaultFont, DisplayPosition pos, DisplayColor colorText) {
+    if (defaultFont) {
         matrix.setFont();
         matrix.setCursor(pos.x, pos.y);
+    }else{
+        matrix.setFont(&TomThumb);
+        matrix.setCursor(pos.x, pos.y+6);
     }
 
     matrix.print(text);  
-
+    matrix.setTextWrap(false);
     matrix.setTextColor(color(colorText));
     matrix.show();
 }
@@ -159,26 +162,6 @@ void Display::showLogo() {
     drawPixel(31, 7, COLOR_RED);
 
     matrix.show();
-}
-
-void Display::scrollText(String text, DisplayColor textColor) {
-    int x = matrix.width();
-
-    // Account for 6 pixel wide characters plus a space
-    int pixelsInText = text.length() * 7;
-
-    matrix.setTextColor(color(textColor));
-    matrix.setCursor(x, 0);
-    matrix.print(text);
-    matrix.show();
-
-    while(x > (matrix.width() - pixelsInText)) {
-        matrix.fillScreen(0);
-        matrix.setCursor(--x, 0);
-        matrix.print(text);   
-        matrix.show();
-        delay(150);
-    }
 }
 
 void Display::drawPixel(uint16_t  x, uint16_t  y, DisplayColor pixelColor) {

@@ -1,10 +1,10 @@
-#ifndef Temperature_h
-#define Temperature_h
+#ifndef TemperatureApp_h
+#define TemperatureApp_h
 
 #include <WString.h>
 #include <ApplicationView.h>
 
-class Temperature : public ApplicationView
+class TemperatureApp : public ApplicationView
 {
     private:
         float temperature = 0;
@@ -12,10 +12,10 @@ class Temperature : public ApplicationView
         float heatIndex = 0;
         int view = 0;
     public:
-        void btn1_process() override;         
+        TemperatureApp(int);
+     
         void beforeRender() override;
         void render(Display& display) override;
-
         void showTemperature(Display& display);
         void showHumidity(Display& display);
         void showHeatIndex(Display& display);        

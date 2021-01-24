@@ -6,7 +6,7 @@
 class Wifi 
 {
     private:
-        String ipAddress;
+        
     public:
         void setup();
         void loop();
