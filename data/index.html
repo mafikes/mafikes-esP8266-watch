@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="app.css">
+
+    <title>MafikesWatch Control</title>
+  </head>
+  <body>  
+    <div class="modal_notification">    
+        <span>Please wait. Applying changes...</span>
+    </div>
+
+    <div class="container">
+      <a href="#" class="js-reload">
+        <h1 class="logo">Mafikes<span>Watch</span></h1>
+      </a>
+
+      <div class="control-box">
+        <label>Change View</label>
+
+        <div class="switch-buttons">
+          <div class="switch-buttons__button js-switch-button" data-button="1">Button 1</div>
+          <div class="switch-buttons__button js-switch-button" data-button="2">Button 2</div>
+          <div class="switch-buttons__button js-switch-button" data-button="3">Button 3</div>
+        </div>
+      </div>
+
+      <div class="control-box">
+        <label>Brightness</label>
+
+        <div class="brightness-switch">
+          <div class="brightness-switch__panel">Min</div>
+          <div class="brightness-switch__panel">
+            <input type="range" min="1" max="255" value="10" class="js-slider-brightness"/>
+          </div>
+          <div class="brightness-switch__panel">Max</div>
+        </div>
+      
+        <div class="clearfix"></div>
+
+        <small>
+          <span style="color: red; font-weight: 500">HIGH</span> 
+          value is not recommended. Display can be destroyed.
+        </small>
+      </div>
+
+      <div class="control-box">
+        <label>Watch</label>
+
+        <div class="subtitle">Type</div>
+        <select class="js-watch-type">
+          <option value="0">HH:SS</option>
+          <option value="1">HH:MM:SS</option>
+        </select>
+
+        <div class="subtitle">Color</div>
+        <select class="js-watch-color">
+          <option value="white">White</option>
+          <option value="">Red</option>
+          <option value="">Orange</option>
+          <option value="">Blue</option>
+        </select>
+      </div>
+
+      <div class="control-box">
+        <label>SHOW TEXT</label>
+        <input type="text" value="" placeholder="Type text here..." class="js-show-text-value"/>
+
+        <center>
+          <button class="btn primary js-show-text-show">Show</button>
+          <button class="btn danger js-show-text-clear">Clear</button>
+        </center>        
+      </div>
+
+      <div class="control-box">
+        <label>Settings</label>
+
+        <div class="subtitle">Auto Brightness</div>
+        <select>
+          <option value="1">On</option>
+          <option value="0">Off</option>
+        </select>
+
+        <div class="subtitle">
+          Switch view every <br/> <small>time in milliseconds | 0 for disable switch | 60 000 ms 1 minute | 300 000 ms 5 miuntes</small>
+        </div>
+        <input type="number" name="" />
+
+        <div class="subtitle">Weather Location</div>
+        <select>
+          <option value="3070628">Milovice</option>
+          <option value="3067696">Prague</option>
+        </select>
+
+        <div class="subtitle">Weather API key</div>
+        <input
+          type="text"
+          placeholder="API key"
+          class="js-weather-api"
+        />
+      </div>
+    </div>
+    
+    <script src="app.js"></script> 
+  </body>
+</html>
