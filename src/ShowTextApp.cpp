@@ -17,7 +17,7 @@ ShowTextApp::ShowTextApp(String _showText, bool useDefaultFont, int speed, Displ
     if(defaultFont) {
         showTextLenght = _showText.length() * 7;
     } else {
-        showTextLenght = _showText.length() * 6;
+        showTextLenght = _showText.length() * 5;
     }
 
     position = MATRIX_WIDTH;
@@ -32,7 +32,7 @@ void ShowTextApp::render(Display& display)
 {   
     unsigned long currentAnimation = millis();
 
-    if(currentAnimation - previousAnimation >= animationSpeed) {
+    if((unsigned long) (currentAnimation - previousAnimation) >= animationSpeed) {
         if(position == -showTextLenght) {
             position = MATRIX_WIDTH;
         }
