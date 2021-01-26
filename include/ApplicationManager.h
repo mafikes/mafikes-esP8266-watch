@@ -10,24 +10,31 @@ class ApplicationManager {
         ApplicationManager(ApplicationManager const&);
         void operator = (ApplicationManager const&);
 
-        int activeAppView = 0;    
-        int nextAppView = 0;
-        bool runBeforeRender = true;     
-        
+        int activeAppView = 0;     
+        int storedAppView = 0;
+        bool allowedSwitchApp;
+        bool canSwitchApp;
+        bool autoSwitchRun;
+
         int btn1LastState = LOW;
         int btn2LastState = LOW;
         int btn3LastState = LOW;
 
+        void autoTimerAppSwitch();
+        void autoSwitchMainTimer();
+        void resumeAutoSwitch();
+
+        int intervalMainSwitchApp = 300000; // 5min 
+        int intervalSwitchApp = 10000; // 10s
+
         String showTextValue; 
         ApplicationView* application;
-        // ApplicationView applications[2];
-        // ApplicationView* getActiveApp();   
     public:
         static ApplicationManager& getInstance() {
             static ApplicationManager instance;
             return instance;
         }
-
+        
         void showText(String text);  
         void setBrightness(int value);
         void btn1_process();

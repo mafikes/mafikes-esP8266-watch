@@ -19,14 +19,43 @@
 #define BTN2_PIN 12
 #define BTN3_PIN 15
 
-void switchAppView();
+unsigned long prevMainSwitchMillis = 0;
+unsigned long prevAppSwitchMillis = 0;
 
-// Ticker
-Ticker tickerSwitchAppView(switchAppView, 30000);
+void ApplicationManager::autoTimerAppSwitch() 
+{    
+    unsigned long currentMillis = millis();
+    if ((unsigned long)(currentMillis - prevAppSwitchMillis) >= intervalSwitchApp) {
+        ApplicationManager::getInstance().nextApp();
 
-void switchAppView() 
+        if(storedAppView == activeAppView) {            
+            resumeAutoSwitch();
+        }
+
+        prevAppSwitchMillis = currentMillis;
+    }
+}
+
+void ApplicationManager::autoSwitchMainTimer() 
 {
-    ApplicationManager::getInstance().nextApp();
+    unsigned long currentMillis = millis();
+    if ((unsigned long)(currentMillis - prevMainSwitchMillis) >= intervalMainSwitchApp) {
+        storedAppView = activeAppView;
+
+        autoSwitchRun = true;
+
+        prevMainSwitchMillis = currentMillis;
+        prevAppSwitchMillis = currentMillis;
+    }
+}
+
+void ApplicationManager::resumeAutoSwitch() 
+{
+    unsigned long currentMillis = millis();
+
+    autoSwitchRun = false;
+    canSwitchApp = true;
+    prevMainSwitchMillis = currentMillis;
 }
 
 void ApplicationManager::setBrightness(int value)
@@ -36,17 +65,19 @@ void ApplicationManager::setBrightness(int value)
 
 void ApplicationManager::btn1_process()
 {
+    resumeAutoSwitch();
     application->btn1_process();
 }
 
 void ApplicationManager::btn2_process()
-{
-    tickerSwitchAppView.resume();
+{        
+    resumeAutoSwitch();
     nextApp(true);
 }
 
 void ApplicationManager::btn3_process()
 {
+    resumeAutoSwitch();
     application->btn3_process();
 }
 
@@ -56,8 +87,8 @@ void ApplicationManager::setup()
     pinMode(BTN2_PIN, INPUT);
     pinMode(BTN3_PIN, INPUT);
 
-    // Start Ticker
-    tickerSwitchAppView.start();
+    allowedSwitchApp = true;
+    canSwitchApp = true;
 
     // Start first App
     application = new TimeApp();
@@ -66,12 +97,16 @@ void ApplicationManager::setup()
 
 void ApplicationManager::showText(String showText)
 {
+    canSwitchApp = false;
+
     application->clear();
     application = new ShowTextApp(showText, true, 100, COLOR_WHITE);
 }
 
 void ApplicationManager::nextApp(bool fromButton) 
 {
+    canSwitchApp = true;
+
     application->clear();  
     activeAppView++;
 
@@ -84,7 +119,8 @@ void ApplicationManager::nextApp(bool fromButton)
     } else if(activeAppView == 4 && fromButton) {
         application = new BrightnessApp();
     } else if(activeAppView == 5 && fromButton) {
-        application = new ShowTextApp("IP:" + IP_ADDRESS, false, 120, COLOR_RED);
+        canSwitchApp = false;
+        application = new ShowTextApp("IP:" + IP_ADDRESS, false, 100, COLOR_RED);
     } else {
         application = new TimeApp();
         activeAppView = 0;
@@ -95,8 +131,11 @@ void ApplicationManager::nextApp(bool fromButton)
 
 void ApplicationManager::loop()
 {
-    tickerSwitchAppView.update();
-
+    if(allowedSwitchApp) {
+        if(canSwitchApp && !autoSwitchRun) autoSwitchMainTimer();
+        if(canSwitchApp && autoSwitchRun) autoTimerAppSwitch();
+    }
+ 
     int btn1State = digitalRead(BTN1_PIN);
     int btn2State = digitalRead(BTN2_PIN);
     int btn3State = digitalRead(BTN3_PIN);
