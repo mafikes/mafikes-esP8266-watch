@@ -12,6 +12,7 @@ class WeatherApp : public ApplicationView
     public:
         void askServer();
         void getIcon();
+        void prepareIcon();
         void beforeRender() override;
         void render(Display& display) override;
 };

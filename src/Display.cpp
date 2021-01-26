@@ -17,6 +17,8 @@
 // #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG
 #define MATRIX_TYPE NEO_GRB + NEO_KHZ800
 
+#define arrayLength(array) (sizeof((array))/sizeof((array)[0]))
+
 Display::Display() : matrix(MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_PIN, MATRIX_MODE, MATRIX_TYPE) {    
     setup();
 }
@@ -83,20 +85,20 @@ void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int
     matrix.drawFastVLine(8, 0, 8, 0);
 }
 
-void Display::reset() 
+void Display::resetIconAnimation() 
 {
     lastShowedIcon = 0;
     iconAnimationRepeated = 0;
 }
 
-void Display::showIcon(const uint32_t bitmap[][64], int iconSize, int repeatAnimation) 
+void Display::showIcon(const uint32_t bitmap[][64], int repeatAnimation) 
 {
-    if(iconSize > 1 && iconAnimationRepeated < repeatAnimation) {
+    if(arrayLength(bitmap) > 1 && iconAnimationRepeated < repeatAnimation) {
         fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
-        Serial.println(iconSize);
+        // Serial.println(iconSize);
 
         lastShowedIcon++;
-        if (lastShowedIcon >= iconSize) { // animation is showed full, start it from zero
+        if (lastShowedIcon >= arrayLength(bitmap)) { // animation is showed full, start it from zero
             lastShowedIcon = 0;
             iconAnimationRepeated++;
         }
@@ -114,7 +116,7 @@ void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor co
     matrix.setTextColor(color(colorText));    
 }
 
-void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize, String text, DisplayPosition position, DisplayColor textColor) 
+void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize, String text, DisplayPosition textPosition, DisplayColor textColor) 
 {  
     fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
 
@@ -124,12 +126,11 @@ void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize
     }
 
     matrix.setFont(&TomThumb);
-    matrix.setCursor(position.x+8, position.y+6);
+    matrix.setCursor(textPosition.x+8, textPosition.y+6);
     matrix.setTextColor(color(textColor));
     matrix.print(text);
 
-    matrix.show(); 
-    // delay(300); // TODO: rewrite for delay for millis
+    delay(300); // TODO: rewrite for delay for millis
 }
 
 void Display::show() 
