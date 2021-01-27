@@ -89,25 +89,43 @@ void Display::resetIconAnimation()
 {
     lastShowedIcon = 0;
     iconAnimationRepeated = 0;
+    repeatedAnimation = 0;
 }
 
-void Display::showIcon(const uint32_t bitmap[][64], int repeatAnimation) 
+void Display::showAnimateIcon(const uint32_t bitmap[][64], int animationCount, int animateSteps, int delayTime) 
 {
-    if(arrayLength(bitmap) > 1 && iconAnimationRepeated < repeatAnimation) {
+    if(animationCount > 1 && repeatedAnimation < animateSteps) {
         fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
-        // Serial.println(iconSize);
-
+        
         lastShowedIcon++;
-        if (lastShowedIcon >= arrayLength(bitmap)) { // animation is showed full, start it from zero
+        if (lastShowedIcon >= animationCount) { // animation is showed full, start it from zero
             lastShowedIcon = 0;
-            iconAnimationRepeated++;
+            repeatedAnimation++;
         }
     } else {
         fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
     }
+
+    delay(delayTime);
 }
 
-void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor colorText) {
+void Display::showLoading(int delayTime)
+{
+    for(int i = 0; i < iconAnimationRepeated; i++) {
+        drawPixel(14+i, 4, COLOR_WHITE);
+    } 
+
+    if(iconAnimationRepeated == 4) { 
+        iconAnimationRepeated = 0;
+    }
+
+    iconAnimationRepeated++;
+
+    delay(delayTime);
+}
+
+void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor colorText) 
+{
     matrix.setFont(&TomThumb);
     matrix.setCursor(pos.x+8, pos.y+6);
 

@@ -28,7 +28,7 @@ void TemperatureApp::beforeRender()
 void TemperatureApp::showTemperature(Display& display)
 {  
     display.clear(); 
-    display.showIcon(ICON_TEMPERATURE, 0);
+    display.showAnimateIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE));
     display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 1) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 }
@@ -36,7 +36,7 @@ void TemperatureApp::showTemperature(Display& display)
 void TemperatureApp::showHumidity(Display& display) 
 {
     display.clear();
-    display.showIcon(ICON_TEMPERATURE, 0); 
+    display.showAnimateIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE));
     display.drawTextWithIcon(Helper::getInstance().getStringRounded(humidity, 5, 1) + "%", {2, 0}, COLOR_WHITE);
     display.show();
 }
@@ -44,7 +44,7 @@ void TemperatureApp::showHumidity(Display& display)
 void TemperatureApp::showHeatIndex(Display& display)
 {
     display.clear(); 
-    display.showIcon(ICON_TEMPERATURE, 0);
+    display.showAnimateIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE));
     display.drawTextWithIcon(Helper::getInstance().getStringRounded(heatIndex, 5, 1) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 } 

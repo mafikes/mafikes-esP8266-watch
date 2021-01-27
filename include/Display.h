@@ -18,6 +18,7 @@ class Display {
 
         int lastShowedIcon = 0;
         int iconAnimationRepeated = 0;
+        int repeatedAnimation = 0;
 
         void setup();
     public:
@@ -33,7 +34,8 @@ class Display {
         void drawBitmap(unsigned char[], DisplayPosition, DisplayColor, int16_t, int16_t);
         void fixdrawRGBBitmap(int16_t, int16_t, const uint32_t*, int16_t, int16_t);
         void showTextWithIconAnimated(const uint32_t[][64], int, String, DisplayPosition, DisplayColor);
-        void showIcon(const uint32_t[][64], int);
+        void showLoading(int);
+        void showAnimateIcon(const uint32_t[][64], int, int = 4, int = 300);
         void drawTextWithIcon(String, DisplayPosition, DisplayColor = {255, 255, 255});
         void showLogo();
         void show();
