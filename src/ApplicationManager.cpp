@@ -87,6 +87,11 @@ void ApplicationManager::setup()
     pinMode(BTN2_PIN, INPUT);
     pinMode(BTN3_PIN, INPUT);
 
+    // Set intervals    
+    intervalMainSwitchApp = 300000; // 5min 
+    intervalSwitchApp = 10000; // 10s
+
+    // Set auto switching
     allowedSwitchApp = true;
     canSwitchApp = true;
 
@@ -101,6 +106,16 @@ void ApplicationManager::showText(String showText)
 
     application->clear();
     application = new ShowTextApp(showText, true, 100, COLOR_WHITE);
+}
+
+void ApplicationManager::showMainApp()
+{
+    canSwitchApp = true;
+    application->clear();
+    activeAppView = 0;
+
+    application = new TimeApp();
+    application->beforeRender();
 }
 
 void ApplicationManager::nextApp(bool fromButton) 

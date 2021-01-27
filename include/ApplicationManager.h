@@ -24,8 +24,8 @@ class ApplicationManager {
         void autoSwitchMainTimer();
         void resumeAutoSwitch();
 
-        int intervalMainSwitchApp = 300000; // 5min 
-        int intervalSwitchApp = 10000; // 10s
+        unsigned long intervalMainSwitchApp = 300000; // 5min 
+        unsigned long intervalSwitchApp = 10000; // 10s
 
         String showTextValue; 
         ApplicationView* application;
@@ -35,6 +35,7 @@ class ApplicationManager {
             return instance;
         }
         
+        void showMainApp();
         void showText(String text);  
         void setBrightness(int value);
         void btn1_process();

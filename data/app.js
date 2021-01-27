@@ -75,7 +75,7 @@ _elements.showText.addEventListener("click", (event) => {
 document.querySelector(".js-show-text-clear").addEventListener("click", (event) => {
   if(document.querySelector(".js-show-text-value").value) {
     document.querySelector(".js-show-text-value").value = "";
-    sendRequest('change-view', `?button=2`, () => {});
+    sendRequest('show-main-app', '', () => {});
   }
 });
 

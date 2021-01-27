@@ -76,6 +76,11 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
+    server.on("/show-main-app", HTTP_GET, [](AsyncWebServerRequest *request) {
+        ApplicationManager::getInstance().showMainApp();
+        request->send(200, "text/plain", "OK");
+    });
+
     server.on("/show-text", HTTP_GET, [](AsyncWebServerRequest *request){
         if(request->hasParam("value")) {
             String text = request->getParam("value")->value();

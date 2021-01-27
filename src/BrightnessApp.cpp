@@ -37,7 +37,6 @@ void BrightnessApp::render(Display& display)
     // Serial.println(percentage);
 
     display.clear(); 
-    display.showIcon(ICON_BRIGHTNESS, arrayLength(ICON_BRIGHTNESS), 0);
     display.drawTextWithIcon(Helper::getInstance().getStringRounded(percentage, 5, 0) + "%", {0, 0}, COLOR_WHITE);
     display.show();
 }

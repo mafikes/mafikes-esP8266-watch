@@ -14,7 +14,7 @@ class ShowTextApp : public ApplicationView
         unsigned long animationSpeed;
         DisplayColor textColor;
     public:
-        ShowTextApp(String, bool, int, DisplayColor);
+        ShowTextApp(String, bool, int, DisplayColor color);       
         void beforeRender() override;
         void render(Display& display) override;   
 };
