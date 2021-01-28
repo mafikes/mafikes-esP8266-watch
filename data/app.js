@@ -1,10 +1,11 @@
 
 let _elements = {
-  switchButtons: document.querySelectorAll(".js-switch-button"),
-  brightness: document.querySelector(".js-slider-brightness"),
-  watchColor: document.querySelector(".js-watch-color"),
-  showText: document.querySelector(".js-show-text-show"),
-  weatherApi: document.querySelector(".js-weather-api"),
+    switchButtons: document.querySelectorAll(".js-switch-button"),
+    brightness: document.querySelector(".js-slider-brightness"),
+    watchType: document.querySelector(".js-watch-type"),
+    watchColor: document.querySelector(".js-watch-color"),
+    showText: document.querySelector(".js-show-text-show"),
+    weatherApi: document.querySelector(".js-weather-api"),
 };
 
 /**
@@ -14,36 +15,37 @@ let _elements = {
  * @param {*} callback 
  */
 function sendRequest(method, data, callback) {
-  let notify = document.querySelector('.modal_notification');
-  notify.classList.add('show');
+    let notify = document.querySelector('.modal_notification');
+    notify.classList.add('show');
 
-  let url =`/${method}${data}`;
-  let xmlHttp = new XMLHttpRequest();
-  xmlHttp.onreadystatechange = function (notify) {
+    let url =`/${method}${data}`;
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function (notify) {
+   
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
         callback(xmlHttp.responseText);
         setTimeout(function() {
-          document.querySelector('.modal_notification').classList.remove("show");
+            document.querySelector('.modal_notification').classList.remove("show");
         }, 300);
     }
-  };
+    };
 
-  console.log(url);
+    console.log(url);
 
-  xmlHttp.open("GET", url, true);
-  xmlHttp.send(null);
+    xmlHttp.open("GET", url, true);
+    xmlHttp.send(null);
 }
 
 /**
  * Load data from device
  */
 function loadData() {
-  sendRequest('devices', "", (response) => {
-    let data = JSON.parse(response);
-    console.log('devices data', data);
+    sendRequest('devices', "", (response) => {
+        let data = JSON.parse(response);
+        console.log('devices data', data);
 
-    //TODO: set all page from config
-  });
+        //TODO: set all page from config
+    });
 } 
 
 // SWITCH BUTTONS
@@ -57,26 +59,32 @@ _elements.switchButtons.forEach( (button, key) => {
 
 // BRIGHTNESS
 _elements.brightness.addEventListener("change", (event) => {
-  let value = event.target.value; 
-  sendRequest('brightness', `?value=${value}`, () => {});
+    let value = event.target.value; 
+    sendRequest('brightness', `?value=${value}`, () => {});
+});
+
+// WATCH TYPE
+_elements.watchType.addEventListener("change", (event) => {
+    let value = event.target.value; 
+    sendRequest('watch-type', `?value=${value}`, () => {});
 });
 
 // WATCH COLOR
 _elements.watchColor.addEventListener("change", (event) => {
-  let value = event.target.value; 
-  sendRequest('watch-color', `?value=${value}`, () => {});
+    let value = event.target.value; 
+    sendRequest('watch-color', `?value=${value}`, () => {});
 });
 
 // SHOW TEXT
 _elements.showText.addEventListener("click", (event) => {
-  let value = document.querySelector(".js-show-text-value").value; 
-  if(value) sendRequest('show-text', `?value=${value}`, () => {});
+    let value = document.querySelector(".js-show-text-value").value; 
+    if(value) sendRequest('show-text', `?value=${value}`, () => {});
 });
 document.querySelector(".js-show-text-clear").addEventListener("click", (event) => {
-  if(document.querySelector(".js-show-text-value").value) {
-    document.querySelector(".js-show-text-value").value = "";
-    sendRequest('show-main-app', '', () => {});
-  }
+    if(document.querySelector(".js-show-text-value").value) {
+        document.querySelector(".js-show-text-value").value = "";
+        sendRequest('show-main-app', '', () => {});
+    }
 });
 
 // SETTINGS
