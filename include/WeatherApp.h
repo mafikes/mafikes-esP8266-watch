@@ -9,8 +9,8 @@ class WeatherApp : public ApplicationView
     private:
         float temperature = 0;      
         float downloaded = false;    
-        String temperature_icon;     
-        String last_temperature_icon;      
+        String temperatureIcon;     
+        String lastTemperatureIcon;      
     public:
         void showIcon(Display& display);
         void askServer();

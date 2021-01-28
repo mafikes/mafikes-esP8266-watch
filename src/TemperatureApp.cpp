@@ -23,28 +23,69 @@ void TemperatureApp::beforeRender()
 {
     dht.begin();
     pinMode(DHTPIN, INPUT_PULLUP);
+
+    showIcon = "";
+    lastShowedIcon = "";
+    Display::getInstance().resetIconAnimation();
+    Display::getInstance().resetLoading();
 }
 
 void TemperatureApp::showTemperature(Display& display)
 {  
-    display.clear(); 
-    display.showAnimateIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE));
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 1) + "C", {2, 0}, COLOR_WHITE);
+    display.clear();
+    
+    if (sensorLoad) {
+        if(temperature >= 20) {
+            display.showAnimateIcon(ICON_TEMPERATURE_RED, arrayLength(ICON_TEMPERATURE_RED));
+            showIcon = "temperature_red";
+        } else if(temperature < 20) {
+            display.showAnimateIcon(ICON_TEMPERATURE_BLUE, arrayLength(ICON_TEMPERATURE_BLUE));            
+            showIcon = "temperature_blue";
+        }
+
+        display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 0) + "C", {0, 0}, COLOR_WHITE);
+    } else {
+        display.showLoading();
+    }   
+
+    if(lastShowedIcon != showIcon) {
+        display.resetIconAnimation();
+    } 
+
+    lastShowedIcon = showIcon;
     display.show();
 }
 
 void TemperatureApp::showHumidity(Display& display) 
 {
     display.clear();
-    display.showAnimateIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE));
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(humidity, 5, 1) + "%", {2, 0}, COLOR_WHITE);
+    
+     if (sensorLoad) {
+        if(humidity >= 39 && humidity <= 60) {        
+            display.showAnimateIcon(ICON_SMILE_GOOD, arrayLength(ICON_SMILE_GOOD));
+            showIcon = "smile_good";
+        } else {
+            display.showAnimateIcon(ICON_SMILE_BAD, arrayLength(ICON_SMILE_BAD));
+            showIcon = "smile_bad";
+        }
+
+        display.drawTextWithIcon(Helper::getInstance().getStringRounded(humidity, 5, 0) + "%", {0, 0}, COLOR_WHITE);
+
+        if(lastShowedIcon != showIcon) {
+            display.resetIconAnimation();
+        }
+        
+        lastShowedIcon = showIcon;
+    } else {
+        display.showLoading();
+    }
+
     display.show();
 }
 
 void TemperatureApp::showHeatIndex(Display& display)
 {
     display.clear(); 
-    display.showAnimateIcon(ICON_TEMPERATURE, arrayLength(ICON_TEMPERATURE));
     display.drawTextWithIcon(Helper::getInstance().getStringRounded(heatIndex, 5, 1) + "C", {2, 0}, COLOR_WHITE);
     display.show();
 } 
@@ -55,13 +96,15 @@ void TemperatureApp::readData()
     temperature = dht.readTemperature();
 
     if (isnan(humidity) || isnan(temperature)) {
+      Serial.println(F("Failed to read from DHT sensor!"));
+      sensorLoad = false;
+      heatIndex = 0;
       temperature = 0;
       humidity = 0;
-      heatIndex = 0;
-      Serial.println(F("Failed to read from DHT sensor!"));
       return;
     }
 
+    sensorLoad = true;
     heatIndex = dht.computeHeatIndex(temperature, humidity, false);
 }
 

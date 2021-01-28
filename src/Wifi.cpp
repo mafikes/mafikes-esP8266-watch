@@ -71,6 +71,11 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
+    server.on("/watch-type", HTTP_GET, [](AsyncWebServerRequest *request){
+        // TODO: set watch type
+        request->send(200, "text/plain", "OK");
+    });
+
     server.on("/watch-color", HTTP_GET, [](AsyncWebServerRequest *request){
         // TODO: set color watch
         request->send(200, "text/plain", "OK");

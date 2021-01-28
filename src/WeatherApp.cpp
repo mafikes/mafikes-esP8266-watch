@@ -15,29 +15,29 @@
 
 void WeatherApp::showIcon(Display& display) 
 {
-    if(last_temperature_icon != temperature_icon) {
+    if(lastTemperatureIcon != temperatureIcon) {
         display.resetIconAnimation();
     } 
 
-    if(temperature_icon == "01") {
+    if(temperatureIcon == "01") {
         display.showAnimateIcon(ICON_SUN, arrayLength(ICON_SUN));
-    } else if (temperature_icon == "02") {      
+    } else if (temperatureIcon == "02") {      
         display.showAnimateIcon(ICON_PARTLYCLOUD, arrayLength(ICON_PARTLYCLOUD));
-    } else if (temperature_icon == "03" || temperature_icon == "04") {      
+    } else if (temperatureIcon == "03" || temperatureIcon == "04") {      
         display.showAnimateIcon(ICON_CLOUDY, arrayLength(ICON_CLOUDY));
-    } else if (temperature_icon == "09" || temperature_icon == "10") {
+    } else if (temperatureIcon == "09" || temperatureIcon == "10") {
         display.showAnimateIcon(ICON_RAIN, arrayLength(ICON_RAIN));
-    } else if (temperature_icon == "11") {
+    } else if (temperatureIcon == "11") {
         display.showAnimateIcon(ICON_THUNDER, arrayLength(ICON_THUNDER));
-    } else if (temperature_icon == "13") {  
+    } else if (temperatureIcon == "13") {  
         display.showAnimateIcon(ICON_SNOW, arrayLength(ICON_SNOW));
-    } else if (temperature_icon == "50") {
+    } else if (temperatureIcon == "50") {
         display.showAnimateIcon(ICON_MIST, arrayLength(ICON_MIST));
     } else {
         display.showAnimateIcon(ICON_SUN, arrayLength(ICON_SUN));
     }
     
-    last_temperature_icon = temperature_icon;
+    lastTemperatureIcon = temperatureIcon;
 }
 
 void WeatherApp::askServer() 
@@ -64,8 +64,8 @@ void WeatherApp::askServer()
             
             temperature = doc["main"]["temp"];     
             const char* icon = doc["weather"][0]["icon"];
-            temperature_icon = icon;
-            temperature_icon.remove(2, 1);
+            temperatureIcon = icon;
+            temperatureIcon.remove(2, 1);
 
             downloaded = true;
             Display::getInstance().resetIconAnimation();
@@ -78,6 +78,7 @@ void WeatherApp::askServer()
 void WeatherApp::beforeRender() 
 {
     Display::getInstance().resetIconAnimation();
+    Display::getInstance().resetLoading();
 }
 
 void WeatherApp::render(Display& display) 
@@ -86,9 +87,10 @@ void WeatherApp::render(Display& display)
 
     if(!downloaded) {
         askServer();        
+        display.showLoading();
     } else {    
         showIcon(display);              
-        display.drawText(Helper::getInstance().getStringRounded(temperature, 5, 1) + "C", false, {10, 0}, COLOR_WHITE);      
+        display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 0) + "C", {0, 0}, COLOR_WHITE);      
     }
 
     display.show();

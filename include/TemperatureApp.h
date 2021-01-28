@@ -11,6 +11,11 @@ class TemperatureApp : public ApplicationView
         int humidity = 0;    
         float heatIndex = 0;
         int view = 0;
+
+        bool sensorLoad = false;
+
+        String showIcon;
+        String lastShowedIcon;
     public:
         TemperatureApp(int);
      

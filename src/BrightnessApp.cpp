@@ -30,13 +30,8 @@ void BrightnessApp::btn3_process()
 
 void BrightnessApp::render(Display& display) 
 {
-    percentage = ((float)activeBrightness/(float)arrayLength(brightness))*100.0f;
-    // if(BRIGHTNESS == 1) percentage = 1;
-
-    // Serial.println(arrayLength(brightness));
-    // Serial.println(percentage);
-
     display.clear(); 
-    display.drawTextWithIcon(Helper::getInstance().getStringRounded(percentage, 5, 0) + "%", {0, 0}, COLOR_WHITE);
+    display.showIcon(ICON_BRIGHTNESS);
+    display.drawTextWithIcon("BRIGHT", {2, 0}, COLOR_WHITE);
     display.show();
 }
