@@ -87,13 +87,22 @@ void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int
 
 void Display::resetIconAnimation() 
 {
-    lastShowedIcon = 0;
-    iconAnimationRepeated = 0;
+    lastShowedIcon = 0;    
     repeatedAnimation = 0;
+    lastIconAnimationCount = 0;
+}
+
+void Display::showIcon(const uint32_t bitmap[][64]) 
+{
+    fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
 }
 
 void Display::showAnimateIcon(const uint32_t bitmap[][64], int animationCount, int animateSteps, int delayTime) 
 {
+    if(lastIconAnimationCount != animationCount) {
+        resetIconAnimation();
+    }
+
     if(animationCount > 1 && repeatedAnimation < animateSteps) {
         fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
         
@@ -101,25 +110,33 @@ void Display::showAnimateIcon(const uint32_t bitmap[][64], int animationCount, i
         if (lastShowedIcon >= animationCount) { // animation is showed full, start it from zero
             lastShowedIcon = 0;
             repeatedAnimation++;
+            delay(200);
         }
     } else {
         fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
     }
 
+    lastIconAnimationCount = animationCount;
+
     delay(delayTime);
+}
+
+void Display::resetLoading()
+{
+    loadingRepeated = 0;
 }
 
 void Display::showLoading(int delayTime)
 {
-    for(int i = 0; i < iconAnimationRepeated; i++) {
+    for(int i = 0; i < loadingRepeated; i++) {
         drawPixel(14+i, 4, COLOR_WHITE);
     } 
 
-    if(iconAnimationRepeated == 4) { 
-        iconAnimationRepeated = 0;
+    if(loadingRepeated == 4) { 
+        loadingRepeated = 0;
     }
 
-    iconAnimationRepeated++;
+    loadingRepeated++;
 
     delay(delayTime);
 }
