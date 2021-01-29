@@ -87,7 +87,7 @@ void WeatherApp::render(Display& display)
 
     if(!downloaded) {
         askServer();        
-        display.showLoading();
+        display.showLoading();        
     } else {    
         showIcon(display);              
         display.drawTextWithIcon(Helper::getInstance().getStringRounded(temperature, 5, 0) + "C", {0, 0}, COLOR_WHITE);      
