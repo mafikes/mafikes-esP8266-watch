@@ -4,6 +4,7 @@
 #include <Display.h>
 #include <WString.h>
 #include <Ticker.h>
+#include "Settings.h"
 
 // Applications 
 #include <WeatherApp.h>
@@ -11,16 +12,12 @@
 #include <TemperatureApp.h>
 #include <BrightnessApp.h>
 #include <ShowTextApp.h>
-#include "Display.h"
-#include "Settings.h"
+#include <DrawApp.h>
 
 // Buttons PIN
 #define BTN1_PIN 13
 #define BTN2_PIN 12
 #define BTN3_PIN 15
-
-unsigned long prevMainSwitchMillis = 0;
-unsigned long prevAppSwitchMillis = 0;
 
 void ApplicationManager::autoTimerAppSwitch() 
 {    
@@ -110,7 +107,8 @@ void ApplicationManager::showText(String showText)
 
 void ApplicationManager::showMainApp()
 {
-    canSwitchApp = true;
+    resumeAutoSwitch();
+
     application->clear();
     activeAppView = 0;
 
@@ -121,8 +119,8 @@ void ApplicationManager::showMainApp()
 void ApplicationManager::nextApp(bool fromButton) 
 {
     canSwitchApp = true;
-
-    application->clear();  
+    application->clear();
+      
     activeAppView++;
 
     if(activeAppView == 1) {
@@ -136,6 +134,8 @@ void ApplicationManager::nextApp(bool fromButton)
     } else if(activeAppView == 5 && fromButton) {
         canSwitchApp = false;
         application = new ShowTextApp("IP:" + IP_ADDRESS, false, 100, COLOR_RED);
+    } else if(activeAppView == 6) {
+        application = new DrawApp();
     } else {
         application = new TimeApp();
         activeAppView = 0;

@@ -24,6 +24,8 @@ class ApplicationManager {
         void autoSwitchMainTimer();
         void resumeAutoSwitch();
 
+        unsigned long prevMainSwitchMillis = 0;
+        unsigned long prevAppSwitchMillis = 0;
         unsigned long intervalMainSwitchApp = 300000; // 5min 
         unsigned long intervalSwitchApp = 10000; // 10s
 
