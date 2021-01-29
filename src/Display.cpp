@@ -82,7 +82,7 @@ void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int
     }
     
     matrix.drawRGBBitmap(x, y, RGB_bmp_fixed, w, h);  
-    matrix.drawFastVLine(8, 0, 8, 0);
+    // matrix.drawFastVLine(8, 0, 8, 0);
 }
 
 void Display::resetIconAnimation() 
@@ -110,7 +110,7 @@ void Display::showAnimateIcon(const uint32_t bitmap[][64], int animationCount, i
         if (lastShowedIcon >= animationCount) { // animation is showed full, start it from zero
             lastShowedIcon = 0;
             repeatedAnimation++;
-            delay(200);
+            delay(400);
         }
     } else {
         fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
@@ -128,16 +128,34 @@ void Display::resetLoading()
 
 void Display::showLoading(int delayTime)
 {
-    for(int i = 0; i < loadingRepeated; i++) {
-        drawPixel(14+i, 4, COLOR_WHITE);
-    } 
+    loadingRepeated++;
+
+    int col = 0;
+    int fullCol = 0;
+    for(int i = 0; i < 12; i++) { 
+        col++;
+
+        if(col == 3) {
+            col = 0;
+            fullCol++;
+
+            if(fullCol == loadingRepeated) {
+                drawPixel(11+i-2, 3, COLOR_RED);
+                drawPixel(11+i-2, 4, COLOR_RED);
+                drawPixel(12+i-2, 3, COLOR_RED);
+                drawPixel(12+i-2, 4, COLOR_RED);
+            }
+            continue;
+        }
+
+        drawPixel(11+i, 3, COLOR_WHITE);
+        drawPixel(11+i, 4, COLOR_WHITE);
+    }
 
     if(loadingRepeated == 4) { 
         loadingRepeated = 0;
     }
-
-    loadingRepeated++;
-
+    
     delay(delayTime);
 }
 

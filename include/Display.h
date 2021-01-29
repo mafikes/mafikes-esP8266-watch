@@ -37,7 +37,7 @@ class Display {
         void showTextWithIconAnimated(const uint32_t[][64], int, String, DisplayPosition, DisplayColor);
         void resetLoading();
         void showLoading(int = 300);
-        void showAnimateIcon(const uint32_t[][64], int, int = 4, int = 200);
+        void showAnimateIcon(const uint32_t[][64], int, int = 4, int = 250);
         void showIcon(const uint32_t[][64]);
         void drawTextWithIcon(String, DisplayPosition, DisplayColor = {255, 255, 255});
         void showLogo();
