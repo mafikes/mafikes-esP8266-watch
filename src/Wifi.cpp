@@ -1,6 +1,7 @@
 #include <Wifi.h>
 #include <Display.h>
 #include "Settings.h"
+#include <Config.h>
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -71,16 +72,6 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
-    server.on("/watch-type", HTTP_GET, [](AsyncWebServerRequest *request){
-        // TODO: set watch type
-        request->send(200, "text/plain", "OK");
-    });
-
-    server.on("/watch-color", HTTP_GET, [](AsyncWebServerRequest *request){
-        // TODO: set color watch
-        request->send(200, "text/plain", "OK");
-    });
-
     server.on("/show-main-app", HTTP_GET, [](AsyncWebServerRequest *request) {
         ApplicationManager::getInstance().showMainApp();
         request->send(200, "text/plain", "OK");
@@ -97,10 +88,26 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
+    server.on("/change-weather-location", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("value")) {
+            String value = request->getParam("value")->value();
+            
+            Config& config = Config::getInstance();
+            config.data.weather_location = value;  
+            config.save();
+            
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
     server.on("/change-weather-api", HTTP_GET, [](AsyncWebServerRequest *request){
         if(request->hasParam("value")) {
             String value = request->getParam("value")->value();
-            // TODO: save weather api        
+            
+            Config& config = Config::getInstance();
+            config.data.weather_key = value;  
+            config.save();
         }
 
         request->send(200, "text/plain", "OK");

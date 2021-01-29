@@ -1,10 +1,10 @@
 #include <WeatherApp.h>
-#include <Config.h>
 #include <Display.h>
 #include <Colors.h>
 #include <WString.h>
 #include <Icons.h>
 #include <Helper.h>
+#include <Config.h>
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -42,11 +42,15 @@ void WeatherApp::showIcon(Display& display)
 
 void WeatherApp::askServer() 
 {
+    Config& config = Config::getInstance();
+
     DynamicJsonDocument doc(1200);
     HTTPClient http;
     WiFiClient client;
 
-    http.begin(("http://api.openweathermap.org/data/2.5/weather?id=") + API_WEATHER_LOCATION +("&appid=")+ API_WEATHER_KEY +("&units=metric"));
+    // Serial.println(config.data.weather_location);
+
+    http.begin(("http://api.openweathermap.org/data/2.5/weather?id=") + String(config.data.weather_location) +("&appid=")+ String(config.data.weather_key) + ("&units=metric"));
 
     int httpCode = http.GET();
     Serial.println(httpCode);

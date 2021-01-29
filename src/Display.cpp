@@ -29,7 +29,7 @@ void Display::setup() {
     
     // matrix.setFont(&TomThumb);
     // matrix.setTextColor(color(COLOR_WHITE));
-    setBrightness(BRIGHTNESS);
+    setBrightness(20); // TODO: FROM config
 
     // clear();
 }
@@ -45,8 +45,8 @@ void Display::clear() {
 
 void Display::setBrightness(int value) 
 {
-    BRIGHTNESS = value;
-    matrix.setBrightness(BRIGHTNESS);
+    // BRIGHTNESS = value; // TODO: save in config
+    matrix.setBrightness(value);
 }
 
 uint32_t Display::color(DisplayColor color)
@@ -183,7 +183,7 @@ void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize
     matrix.setTextColor(color(textColor));
     matrix.print(text);
 
-    delay(300); // TODO: rewrite for delay for millis
+    delay(300);
 }
 
 void Display::show() 
@@ -193,7 +193,7 @@ void Display::show()
 
 void Display::showLogo() {
     matrix.clear();
-    matrix.setBrightness(BRIGHTNESS);
+    matrix.setBrightness(40);
 
     matrix.setFont(&TomThumb);
     matrix.setTextColor(color(COLOR_WHITE));

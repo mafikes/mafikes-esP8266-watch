@@ -47,24 +47,6 @@
       </div>
 
       <div class="control-box">
-        <label>Watch</label>
-
-        <div class="subtitle">Type</div>
-        <select class="js-watch-type">
-          <option value="0">HH:SS</option>
-          <option value="1">HH:MM:SS</option>
-        </select>
-
-        <div class="subtitle">Color</div>
-        <select class="js-watch-color">
-          <option value="white">White</option>
-          <option value="">Red</option>
-          <option value="">Orange</option>
-          <option value="">Blue</option>
-        </select>
-      </div>
-
-      <div class="control-box">
         <label>SHOW TEXT</label>
         <input type="text" value="" placeholder="Type text here..." class="js-show-text-value"/>
 
@@ -78,18 +60,29 @@
         <label>Settings</label>
 
         <div class="subtitle">Auto Brightness</div>
-        <select>
+        <select class="js-brightness-auto">
+          <option value="1">On</option>
+          <option value="0">Off</option>
+        </select>
+
+        <div class="subtitle">Auto Switch View</div>
+        <select class="js-view-switch-auto">
           <option value="1">On</option>
           <option value="0">Off</option>
         </select>
 
         <div class="subtitle">
-          Switch view every <br/> <small>time in milliseconds | 0 for disable switch | 60 000 ms 1 minute | 300 000 ms 5 miuntes</small>
+          Switch Main View time <br/> <small>time in milliseconds | 0 for disable switch | 60 000 ms 1 minute | 300 000 ms 5 miuntes</small>
         </div>
-        <input type="number" name="" />
+        <input type="number" class="js-view-switch-main" />
+
+        <div class="subtitle">
+            Switch App time
+        </div>
+        <input type="number" class="js-view-switch-app" />
 
         <div class="subtitle">Weather Location</div>
-        <select>
+        <select class="js-weather-location">
           <option value="3070628">Milovice</option>
           <option value="3067696">Prague</option>
         </select>

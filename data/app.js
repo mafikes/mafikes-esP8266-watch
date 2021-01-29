@@ -1,11 +1,16 @@
+document.addEventListener("DOMContentLoaded", function(event) { 
+    loadData();
+});
 
 let _elements = {
     switchButtons: document.querySelectorAll(".js-switch-button"),
     brightness: document.querySelector(".js-slider-brightness"),
-    watchType: document.querySelector(".js-watch-type"),
-    watchColor: document.querySelector(".js-watch-color"),
+    brightnessAuto: document.querySelector(".js-brightness-auto"),
     showText: document.querySelector(".js-show-text-show"),
+    weatherLocation: document.querySelector(".js-weather-location"),
     weatherApi: document.querySelector(".js-weather-api"),
+    switchMainTime: document.querySelector(".js-view-switch-main"),
+    switchAppTime: document.querySelector(".js-view-switch-app"),
 };
 
 /**
@@ -40,13 +45,20 @@ function sendRequest(method, data, callback) {
  * Load data from device
  */
 function loadData() {
-    sendRequest('devices', "", (response) => {
+    sendRequest('config.json', '', (response) => {
         let data = JSON.parse(response);
-        console.log('devices data', data);
+        console.log('Config: success load data.', data);       
+        
+        _elements.brightness.value = data.brightness;
+        _elements.brightnessAuto.value = data.brightness_auto === "true" ? 1 : 0;;
 
-        //TODO: set all page from config
+        _elements.switchMainTime.value = data.view_main_switch_time;
+        _elements.switchAppTime.value = data.view_app_switch_time;
+
+        _elements.weatherLocation.value = data.weather_location;
+        _elements.weatherApi.value = data.weather_key;
     });
-} 
+}
 
 // SWITCH BUTTONS
 _elements.switchButtons.forEach( (button, key) => {
@@ -61,18 +73,6 @@ _elements.switchButtons.forEach( (button, key) => {
 _elements.brightness.addEventListener("change", (event) => {
     let value = event.target.value; 
     sendRequest('brightness', `?value=${value}`, () => {});
-});
-
-// WATCH TYPE
-_elements.watchType.addEventListener("change", (event) => {
-    let value = event.target.value; 
-    sendRequest('watch-type', `?value=${value}`, () => {});
-});
-
-// WATCH COLOR
-_elements.watchColor.addEventListener("change", (event) => {
-    let value = event.target.value; 
-    sendRequest('watch-color', `?value=${value}`, () => {});
 });
 
 // SHOW TEXT
@@ -91,6 +91,11 @@ document.querySelector(".js-show-text-clear").addEventListener("click", (event) 
 _elements.weatherApi.addEventListener("change", (event) => {
     let value = event.target.value;
     sendRequest('change-weather-api', `?value=${value}`, () => {});
+});
+
+_elements.weatherLocation.addEventListener("change", (event) => {
+    let value = event.target.value;
+    sendRequest('change-weather-location', `?value=${value}`, () => {});
 });
 
 // RELOAD 

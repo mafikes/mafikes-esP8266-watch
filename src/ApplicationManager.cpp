@@ -1,6 +1,5 @@
 #include <ApplicationManager.h>
 
-#include <Config.h>
 #include <Display.h>
 #include <WString.h>
 #include <Ticker.h>
