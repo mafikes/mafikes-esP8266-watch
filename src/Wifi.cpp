@@ -66,7 +66,13 @@ void Wifi::setup() {
     server.on("/brightness", HTTP_GET, [](AsyncWebServerRequest *request){
         if(request->hasParam("value")) {
             String value = request->getParam("value")->value();
-            ApplicationManager::getInstance().setBrightness(value.toInt());
+            int brightness = value.toInt();
+            ApplicationManager::getInstance().setBrightness(brightness);
+
+            Config& config = Config::getInstance();
+            config.data.brightness = brightness;
+            config.data.brightness_auto = false;
+            config.save();
         }
 
         request->send(200, "text/plain", "OK");
@@ -83,6 +89,46 @@ void Wifi::setup() {
             if(text) {
                 ApplicationManager::getInstance().showText(text);
             } 
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
+    server.on("/brightness-auto", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("value")) {
+            String value = request->getParam("value")->value();
+            bool status;
+
+            if(value.toInt()) {
+                status = true;
+            } else {
+                status = false;
+            }
+
+            Config& config = Config::getInstance();
+            config.data.brightness_auto = status;  
+            config.save();
+            
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
+    server.on("/switch-view-auto", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("value")) {
+            String value = request->getParam("value")->value();
+            bool status;
+
+            if(value.toInt()) {
+                status = true;
+            } else {
+                status = false;
+            }
+
+            ApplicationManager::getInstance().changeSwitchViewAuto(status);
+            Config& config = Config::getInstance();
+            config.data.view_auto_switch = status;              
+            config.save();        
         }
 
         request->send(200, "text/plain", "OK");

@@ -4,6 +4,7 @@
 #include <WString.h>
 #include <Ticker.h>
 #include "Settings.h"
+#include <Config.h>
 
 // Applications 
 #include <WeatherApp.h>
@@ -77,6 +78,15 @@ void ApplicationManager::btn3_process()
     application->btn3_process();
 }
 
+void ApplicationManager::changeSwitchViewAuto(bool status)
+{
+    allowedSwitchApp = status;
+
+    if(status) {
+        resumeAutoSwitch();
+    }   
+} 
+
 void ApplicationManager::setup() 
 {
     pinMode(BTN1_PIN, INPUT);
@@ -87,9 +97,7 @@ void ApplicationManager::setup()
     intervalMainSwitchApp = 300000; // 5min 
     intervalSwitchApp = 10000; // 10s
 
-    // Set auto switching
-    allowedSwitchApp = true;
-    canSwitchApp = true;
+    changeSwitchViewAuto(Config::getInstance().data.view_auto_switch); 
 
     // Start first App
     application = new TimeApp();

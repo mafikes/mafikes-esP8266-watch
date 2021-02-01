@@ -26,12 +26,8 @@ Display::Display() : matrix(MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_PIN, MATRIX_MODE
 void Display::setup() {
     matrix.begin();  
     matrix.setTextWrap(false);
-    
-    // matrix.setFont(&TomThumb);
-    // matrix.setTextColor(color(COLOR_WHITE));
-    setBrightness(20); // TODO: FROM config
 
-    // clear();
+    setBrightness(Config::getInstance().data.brightness); 
 }
 
 void Display::refresh() {
@@ -45,8 +41,8 @@ void Display::clear() {
 
 void Display::setBrightness(int value) 
 {
-    // BRIGHTNESS = value; // TODO: save in config
-    matrix.setBrightness(value);
+    brightness = value; 
+    matrix.setBrightness(brightness);
 }
 
 uint32_t Display::color(DisplayColor color)

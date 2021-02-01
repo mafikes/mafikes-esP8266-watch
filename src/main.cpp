@@ -18,12 +18,13 @@ void setup() {
     delay(2000);
     Serial.begin(9600); // Serial Port WS d1 mini
 
+    config.setup();
+    
     Display::getInstance().showLogo();
     Display::getInstance().showLogo(); // show on dispaly logo intro
     // Display::getInstance().clear();
     
-    wifi.setup(); // Init Wifi
-    config.setup();
+    wifi.setup(); // Init Wifi    
     ntp.setup(); // Init NTP Time 
     applicationManager.setup(); // Init Application Manager
 }

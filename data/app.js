@@ -9,6 +9,7 @@ let _elements = {
     showText: document.querySelector(".js-show-text-show"),
     weatherLocation: document.querySelector(".js-weather-location"),
     weatherApi: document.querySelector(".js-weather-api"),
+    switchViewAuto: document.querySelector(".js-view-switch-auto"),
     switchMainTime: document.querySelector(".js-view-switch-main"),
     switchAppTime: document.querySelector(".js-view-switch-app"),
 };
@@ -50,7 +51,8 @@ function loadData() {
         console.log('Config: success load data.', data);       
         
         _elements.brightness.value = data.brightness;
-        _elements.brightnessAuto.value = data.brightness_auto === "true" ? 1 : 0;;
+        _elements.brightnessAuto.value = data.brightness_auto == true ? 1 : 0;        
+        _elements.switchViewAuto.value = data.view_auto_switch == true ? 1 : 0; 
 
         _elements.switchMainTime.value = data.view_main_switch_time;
         _elements.switchAppTime.value = data.view_app_switch_time;
@@ -88,6 +90,16 @@ document.querySelector(".js-show-text-clear").addEventListener("click", (event) 
 });
 
 // SETTINGS
+_elements.brightnessAuto.addEventListener("change", (event) => {
+    let value = event.target.value;
+    sendRequest('brightness-auto', `?value=${value}`, () => {});
+});
+
+_elements.switchViewAuto.addEventListener("change", (event) => {
+    let value = event.target.value;
+    sendRequest('switch-view-auto', `?value=${value}`, () => {});
+});
+
 _elements.weatherApi.addEventListener("change", (event) => {
     let value = event.target.value;
     sendRequest('change-weather-api', `?value=${value}`, () => {});

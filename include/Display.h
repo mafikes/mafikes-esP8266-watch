@@ -20,7 +20,8 @@ class Display {
         int lastIconAnimationCount = 0;
         int loadingRepeated = 0;
         int repeatedAnimation = 0;
-
+        int brightness = 30;
+        
         void setup();
     public:
         static Display& getInstance() {

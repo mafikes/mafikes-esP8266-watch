@@ -5,15 +5,16 @@
 #include <WString.h>
 
 struct ConfigFile {
-  int brightness;
-  bool brightness_auto;
-  int watch_type;
+    int brightness;
+    bool brightness_auto;
+    int watch_type;
 
-  int view_main_switch_time;
-  int view_app_switch_time;
+    bool view_auto_switch;
+    int view_main_switch_time;
+    int view_app_switch_time;
 
-  String weather_key;
-  String weather_location;
+    String weather_key;
+    String weather_location;
 };
 
 class Config

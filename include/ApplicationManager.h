@@ -37,6 +37,7 @@ class ApplicationManager {
             return instance;
         }
         
+        void changeSwitchViewAuto(bool);
         void showMainApp();
         void showText(String text);  
         void setBrightness(int value);
