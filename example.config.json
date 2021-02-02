@@ -1,0 +1,11 @@
+{
+    "brightness": 30,
+    "brightness_auto": true,
+    "watch_type": 1,
+    "watch_type_color": 0,
+    "view_auto_switch": true,
+    "view_main_switch_time": 300000,
+    "view_app_switch_time": 10000,
+    "weather_key": "",
+    "weather_location": ""
+}
