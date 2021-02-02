@@ -27,7 +27,7 @@ void Display::setup() {
     matrix.begin();  
     matrix.setTextWrap(false);
 
-    setBrightness(Config::getInstance().data.brightness); 
+    setBrightness(30); 
 }
 
 void Display::refresh() {
