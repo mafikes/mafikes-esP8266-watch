@@ -158,10 +158,9 @@ void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor co
 {
     matrix.setFont(&TomThumb);
     matrix.setCursor(pos.x+8, pos.y+6);
-
-    matrix.print(text);  
-
-    matrix.setTextColor(color(colorText));    
+    matrix.setTextColor(color(colorText));
+    
+    matrix.print(text);         
 }
 
 void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize, String text, DisplayPosition textPosition, DisplayColor textColor) 
