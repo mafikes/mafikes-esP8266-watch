@@ -12,7 +12,6 @@ class TimeApp : public ApplicationView
         int clockColorActive = 0;
         DisplayColor clockColor = COLOR_WHITE;
         String repairDigit(int);
-        void displayClock(Display& display);
     public:        
         void btn1_process() override;        
         void btn3_process() override;        

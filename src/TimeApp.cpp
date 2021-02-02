@@ -12,23 +12,19 @@ String TimeApp::repairDigit(int digit)
 }
 
 void TimeApp::beforeRender() {
+    clockTheme = Config::getInstance().data.watch_type;
 }
 
-void TimeApp::displayClock(Display& display)
-{
+void TimeApp::render(Display& display) 
+{    
     display.clear();
-
+    
     if(clockTheme == 1) {
         display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), false, {2, 0}, clockColor);
     } else {
         display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), false, {8, 0}, clockColor);
         clockTheme = 0;
     }
-}
-
-void TimeApp::render(Display& display) 
-{
-    displayClock(display);
 }
 
 void TimeApp::btn1_process()
@@ -54,4 +50,8 @@ void TimeApp::btn1_process()
 void TimeApp::btn3_process()
 {
     clockTheme++;
+    
+    Config& config = Config::getInstance();
+    config.data.watch_type = clockTheme;
+    config.save();
 }
