@@ -110,6 +110,7 @@ void ApplicationManager::showText(String showText)
 
     application->clear();
     application = new ShowTextApp(showText, true, 100, COLOR_WHITE);
+    application->beforeRender();
 }
 
 void ApplicationManager::showMainApp()
