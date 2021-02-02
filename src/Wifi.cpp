@@ -29,6 +29,8 @@ void Wifi::setup() {
 
     if(!wifiManager.autoConnect("MAFIKES WATCH")) { 
         Display::getInstance().drawText("Failed", true, {0, 0});
+        Display::getInstance().show();
+        
         Serial.println(F("Failed to connect and timeout occurred")); 
         delay(6000); 
         ESP.restart(); //reset and try again 
