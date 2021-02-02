@@ -9,7 +9,7 @@ class ShowTextApp : public ApplicationView
     private:
         String showText;
         bool defaultFont;
-        int position;
+        int16_t position;
         int showTextLenght;
         unsigned long animationSpeed;
         DisplayColor textColor;

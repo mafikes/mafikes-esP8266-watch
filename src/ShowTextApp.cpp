@@ -29,20 +29,16 @@ void ShowTextApp::beforeRender()
 }
 
 void ShowTextApp::render(Display& display) 
-{   
-    unsigned long currentAnimation = millis();
-
-    if((unsigned long) (currentAnimation - previousAnimation) >= animationSpeed) {
-        if(position == -showTextLenght) {
+{  
+    if(position == -showTextLenght) {
             position = MATRIX_WIDTH;
-        }
-
-        // Serial.println(position);
-
-        display.clear();
-        display.drawText(showText, defaultFont, {position, 0}, textColor);
-        position--;
-
-        previousAnimation = currentAnimation; 
     }
+    
+    display.clear();
+    display.drawText(showText, defaultFont, {position, 0}, textColor);    
+    display.show();
+
+    position--;
+
+    delay(animationSpeed);
 }
