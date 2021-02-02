@@ -159,6 +159,11 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
+    server.on("/restart", HTTP_GET, [](AsyncWebServerRequest *request) {
+        ESP.reset();
+        request->send(200, "text/plain", "OK");
+    });
+
     server.begin();
     Serial.println("HTTP Web server running.");
 }

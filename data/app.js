@@ -12,6 +12,7 @@ let _elements = {
     switchViewAuto: document.querySelector(".js-view-switch-auto"),
     switchMainTime: document.querySelector(".js-view-switch-main"),
     switchAppTime: document.querySelector(".js-view-switch-app"),
+    restartWatch: document.querySelector(".js-restart-device"),
 };
 
 /**
@@ -111,6 +112,12 @@ _elements.weatherLocation.addEventListener("change", (event) => {
 });
 
 // RELOAD 
+_elements.restartWatch.addEventListener("click", (event) => {
+    if(confirm('Are you sure with restart watch?')) {
+        sendRequest('restart', ``, () => {});
+    }
+});
+
 document.querySelector(".js-reload").addEventListener("click", (event) => {
     location.reload();
 });
