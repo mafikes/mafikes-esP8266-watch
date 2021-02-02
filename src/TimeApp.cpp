@@ -13,6 +13,30 @@ String TimeApp::repairDigit(int digit)
 
 void TimeApp::beforeRender() {
     clockTheme = Config::getInstance().data.watch_type;
+    clockColorActive = Config::getInstance().data.watch_type_color;
+    clockColor = getColor();
+}
+
+DisplayColor TimeApp::getColor()
+{
+    DisplayColor watchColor = COLOR_WHITE;
+
+    if(clockColorActive == 1) {
+      watchColor = COLOR_RED;
+    } else if(clockColorActive == 2) {
+      watchColor = COLOR_YELLOW;
+    } else if(clockColorActive == 3) {
+      watchColor = COLOR_ORANGE;
+    } else if(clockColorActive == 4) {
+      watchColor = COLOR_BLUE;      
+    } else if(clockColorActive == 4) {
+      watchColor = COLOR_GREEN;
+    } else {
+      clockColorActive = 0;
+      watchColor = COLOR_WHITE;
+    }
+
+    return watchColor;
 }
 
 void TimeApp::render(Display& display) 
@@ -25,26 +49,18 @@ void TimeApp::render(Display& display)
         display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), false, {8, 0}, clockColor);
         clockTheme = 0;
     }
+
+    display.show();
 }
 
 void TimeApp::btn1_process()
 {
     clockColorActive++;
+    clockColor = getColor();
 
-    if(clockColorActive == 1) {
-      clockColor = COLOR_RED;
-    } else if(clockColorActive == 2) {
-      clockColor = COLOR_YELLOW;
-    } else if(clockColorActive == 3) {
-      clockColor = COLOR_ORANGE;
-    } else if(clockColorActive == 4) {
-      clockColor = COLOR_BLUE;      
-    } else if(clockColorActive == 4) {
-      clockColor = COLOR_GREEN;
-    } else {
-      clockColorActive = 0;
-      clockColor = COLOR_WHITE;
-    }
+    Config& config = Config::getInstance();
+    config.data.watch_type_color = clockColorActive;
+    config.save();
 }
 
 void TimeApp::btn3_process()

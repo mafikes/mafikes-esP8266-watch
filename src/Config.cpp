@@ -19,7 +19,7 @@ void Config::load() {
     data.brightness = doc["brightness"];
     data.brightness_auto = doc["brightness_auto"];
     data.watch_type = doc["watch_type"];
-    // config.watch_color = doc["watch_color"];
+    data.watch_type_color = doc["watch_type_color"];
     data.view_auto_switch = doc["view_auto_switch"];
     data.view_main_switch_time = doc["view_main_switch_time"];
     data.view_app_switch_time = doc["view_app_switch_time"];
@@ -46,7 +46,7 @@ void Config::save()
     doc["brightness"] = data.brightness;
     doc["brightness_auto"] = data.brightness_auto;
     doc["watch_type"] = data.watch_type;
-    // doc["watch_color"] = config.watch_color;
+    doc["watch_type_color"] = data.watch_type_color;
     doc["view_auto_switch"] = data.view_auto_switch;
     doc["view_main_switch_time"] = data.view_main_switch_time;
     doc["view_app_switch_time"] = data.view_app_switch_time;

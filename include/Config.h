@@ -8,6 +8,7 @@ struct ConfigFile {
     int brightness;
     bool brightness_auto;
     int watch_type;
+    int watch_type_color;
 
     bool view_auto_switch;
     int view_main_switch_time;
