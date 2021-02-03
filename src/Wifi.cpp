@@ -116,26 +116,6 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
-    server.on("/switch-view-auto", HTTP_GET, [](AsyncWebServerRequest *request){
-        if(request->hasParam("value")) {
-            String value = request->getParam("value")->value();
-            bool status;
-
-            if(value.toInt()) {
-                status = true;
-            } else {
-                status = false;
-            }
-
-            ApplicationManager::getInstance().changeSwitchViewAuto(status);
-            Config& config = Config::getInstance();
-            config.data.view_auto_switch = status;              
-            config.save();        
-        }
-
-        request->send(200, "text/plain", "OK");
-    });
-
     server.on("/change-weather-location", HTTP_GET, [](AsyncWebServerRequest *request){
         if(request->hasParam("value")) {
             String value = request->getParam("value")->value();
@@ -156,6 +136,45 @@ void Wifi::setup() {
             Config& config = Config::getInstance();
             config.data.weather_key = value;  
             config.save();
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
+    server.on("/switch-main-time", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("value")) {
+            String value = request->getParam("value")->value();
+            
+            int time = value.toInt();
+
+            Config& config = Config::getInstance();
+            
+            if(time > 0) {
+                config.data.view_auto_switch = true;
+                config.data.view_main_switch_time = time;
+            } else {
+                config.data.view_auto_switch = false;
+            }
+
+            config.save();
+
+            ApplicationManager::getInstance().loadSwichTime();
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
+    server.on("/switch-app-time", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("value")) {
+            String value = request->getParam("value")->value();
+            
+            int time = value.toInt();
+
+            Config& config = Config::getInstance();    
+            config.data.view_app_switch_time = time;        
+            config.save();
+
+            ApplicationManager::getInstance().loadSwichTime();
         }
 
         request->send(200, "text/plain", "OK");

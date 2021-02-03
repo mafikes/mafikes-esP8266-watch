@@ -9,7 +9,6 @@ let _elements = {
     showText: document.querySelector(".js-show-text-show"),
     weatherLocation: document.querySelector(".js-weather-location"),
     weatherApi: document.querySelector(".js-weather-api"),
-    switchViewAuto: document.querySelector(".js-view-switch-auto"),
     switchMainTime: document.querySelector(".js-view-switch-main"),
     switchAppTime: document.querySelector(".js-view-switch-app"),
     restartWatch: document.querySelector(".js-restart-device"),
@@ -53,7 +52,6 @@ function loadData() {
         
         _elements.brightness.value = data.brightness;
         _elements.brightnessAuto.value = data.brightness_auto == true ? 1 : 0;        
-        _elements.switchViewAuto.value = data.view_auto_switch == true ? 1 : 0; 
 
         _elements.switchMainTime.value = data.view_main_switch_time;
         _elements.switchAppTime.value = data.view_app_switch_time;
@@ -75,6 +73,7 @@ _elements.switchButtons.forEach( (button, key) => {
 // BRIGHTNESS
 _elements.brightness.addEventListener("change", (event) => {
     let value = event.target.value; 
+    _elements.brightnessAuto.value = 0;
     sendRequest('brightness', `?value=${value}`, () => {});
 });
 
@@ -96,11 +95,6 @@ _elements.brightnessAuto.addEventListener("change", (event) => {
     sendRequest('brightness-auto', `?value=${value}`, () => {});
 });
 
-_elements.switchViewAuto.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('switch-view-auto', `?value=${value}`, () => {});
-});
-
 _elements.weatherApi.addEventListener("change", (event) => {
     let value = event.target.value;
     sendRequest('change-weather-api', `?value=${value}`, () => {});
@@ -109,6 +103,16 @@ _elements.weatherApi.addEventListener("change", (event) => {
 _elements.weatherLocation.addEventListener("change", (event) => {
     let value = event.target.value;
     sendRequest('change-weather-location', `?value=${value}`, () => {});
+});
+
+_elements.switchMainTime.addEventListener("change", (event) => {
+    let value = event.target.value;
+    sendRequest('switch-main-time', `?value=${value}`, () => {});
+});
+
+_elements.switchAppTime.addEventListener("change", (event) => {
+    let value = event.target.value;
+    sendRequest('switch-app-time', `?value=${value}`, () => {});
 });
 
 // RELOAD 

@@ -37,6 +37,7 @@ class ApplicationManager {
             return instance;
         }
         
+        void loadSwichTime();
         void changeSwitchViewAuto(bool);
         void showMainApp();
         void showText(String text);  

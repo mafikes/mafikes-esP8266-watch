@@ -87,17 +87,29 @@ void ApplicationManager::changeSwitchViewAuto(bool status)
     }   
 } 
 
+void ApplicationManager::loadSwichTime()
+{
+    Config& config = Config::getInstance();
+
+    // Set intervals    
+    intervalMainSwitchApp = config.data.view_main_switch_time;  
+    intervalSwitchApp = config.data.view_app_switch_time; 
+
+    resumeAutoSwitch();
+}
+
 void ApplicationManager::setup() 
 {
     pinMode(BTN1_PIN, INPUT);
     pinMode(BTN2_PIN, INPUT);
     pinMode(BTN3_PIN, INPUT);
 
-    // Set intervals    
-    intervalMainSwitchApp = 300000; // 5min 
-    intervalSwitchApp = 10000; // 10s
+    Config& config = Config::getInstance();
 
-    changeSwitchViewAuto(Config::getInstance().data.view_auto_switch); 
+    // Set intervals    
+    loadSwichTime();
+
+    changeSwitchViewAuto(config.data.view_auto_switch); 
 
     // Start first App
     application = new TimeApp();

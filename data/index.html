@@ -65,21 +65,23 @@
           <option value="0">Off</option>
         </select>
 
-        <div class="subtitle">Auto Switch View</div>
-        <select class="js-view-switch-auto">
-          <option value="1">On</option>
-          <option value="0">Off</option>
+        <div class="subtitle">Auto switch time</div>
+        <select class="js-view-switch-main">
+            <option value="0">Never</option>        
+            <option value="60000">1min</option>        
+            <option value="180000">3min</option>        
+            <option value="300000">5min</option>        
+            <option value="600000">10min</option>        
+            <option value="1800000">30min</option>        
         </select>
 
-        <div class="subtitle">
-          Auto switch main view time <br/> <small>time in milliseconds | 60 000 ms 1 minute | 300 000 ms 5 miuntes</small>
-        </div>
-        <input type="number" class="js-view-switch-main" />
-
-        <div class="subtitle">
-            Auto switch app time
-        </div>
-        <input type="number" class="js-view-switch-app" />
+        <div class="subtitle">Auto switch time between apps</div>
+        <select class="js-view-switch-app">
+            <option value="10000">10s</option>        
+            <option value="30000">30s</option>        
+            <option value="60000">1min</option>        
+            <option value="300000">5min</option>              
+        </select>
 
         <div class="subtitle">Weather Location</div>
         <select class="js-weather-location">
