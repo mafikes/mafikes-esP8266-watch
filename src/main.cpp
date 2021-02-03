@@ -7,13 +7,14 @@
 #include <Display.h>
 #include <Wifi.h>
 #include <NTP.h>
-#include <Config.h>
+#include <AutoBrightness.h>
 
 Wifi wifi;
 NTP ntp;
 Config& config = Config::getInstance();
 ApplicationManager& applicationManager = ApplicationManager::getInstance();
 Display& display = Display::getInstance();
+AutoBrightness autoBrightness;
 
 void setup() {
     delay(2000);
@@ -21,6 +22,7 @@ void setup() {
 
     config.setup();
 
+    autoBrightness.setup();
     display.showLogo(); // show on dispaly logo intro
     display.setBrightness(config.data.brightness);
     
@@ -31,5 +33,10 @@ void setup() {
 
 void loop() {
   wifi.loop();
+  
+  if(config.data.brightness_auto) {
+      autoBrightness.loop();
+  }
+
   applicationManager.loop();
 }
