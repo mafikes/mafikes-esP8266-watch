@@ -31,7 +31,7 @@ void ShowTextApp::beforeRender()
 void ShowTextApp::render(Display& display) 
 {  
     if(position == -showTextLenght) {
-            position = MATRIX_WIDTH;
+        position = MATRIX_WIDTH;
     }
     
     display.clear();
