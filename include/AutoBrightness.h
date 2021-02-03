@@ -8,6 +8,8 @@ class AutoBrightness
     private:
         int lightLevel = 0;    
         int lastLightLevel = 0;
+        
+        unsigned long prevTime = 0;
 
         void loadBrightness();    
     public:
