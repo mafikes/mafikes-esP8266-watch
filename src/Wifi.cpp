@@ -41,6 +41,10 @@ void Wifi::setup() {
     Serial.println(F("WiFi connected...")); 
     Serial.println(F("Use this URL to connect: http://")); Serial.println(IP_ADDRESS+"/");
 
+    if (!MDNS.begin("mafikeswatch")) {             // Start the mDNS responder for esp8266.local
+        Serial.println("Error setting up MDNS responder!");
+    }
+
     // Homepage
     server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 

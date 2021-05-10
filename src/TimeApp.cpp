@@ -1,8 +1,6 @@
 #include <TimeApp.h>
 #include <Config.h>
-
-#include <time.h>
-#include <TimeLib.h>
+#include <RTC.h>
 
 String TimeApp::repairDigit(int digit) 
 {
@@ -42,11 +40,14 @@ DisplayColor TimeApp::getColor()
 void TimeApp::render(Display& display) 
 {    
     display.clear();
-    
-    if(clockTheme == 1) {
-        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), false, {2, 0}, clockColor);
+    DateTime now = RTC::getInstance().now();
+
+    if(clockTheme == 1) {        
+        // display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), false, {2, 0}, clockColor);
+        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()) + ":" + repairDigit(now.second()), false, {2, 0}, clockColor);
     } else {
-        display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), false, {8, 0}, clockColor);
+        // display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), false, {8, 0}, clockColor);
+        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {8, 0}, clockColor);
         clockTheme = 0;
     }
 

@@ -4,9 +4,11 @@
 class NTP 
 {
     private:
-
+        unsigned long prevTime = 0;
+        void updateTime();
     public:        
         void setup();
+        void loop();
 };
 
 #endif
