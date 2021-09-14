@@ -17,16 +17,18 @@ void WeatherApp::askServer()
 {
     Config& config = Config::getInstance();
 
-    DynamicJsonDocument doc(1200);
-    HTTPClient http;
+    DynamicJsonDocument doc(1800);    
     WiFiClient client;
+    HTTPClient http;
 
     String url = ("http://api.openweathermap.org/data/2.5/weather?id=") + String(config.data.weather_location) +("&appid=")+ String(config.data.weather_key) + ("&units=metric");
 
     http.begin(client, url.c_str());
+    Serial.println(url.c_str());
+    Serial.println(client.status());
 
     int httpCode = http.GET();
-    Serial.println(httpCode);
+    // Serial.println(httpCode);
 
     if (httpCode > 0) {
         if (httpCode == HTTP_CODE_OK) {      
