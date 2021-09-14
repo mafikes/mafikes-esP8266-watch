@@ -13,33 +13,6 @@
 
 #define arrayLength(array) (sizeof((array))/sizeof((array)[0]))
 
-void WeatherApp::showIcon(Display& display) 
-{
-    if(lastTemperatureIcon != temperatureIcon) {
-        display.resetIconAnimation();
-    } 
-
-    if(temperatureIcon == "01") {
-        display.showAnimateIcon(ICON_SUN, arrayLength(ICON_SUN));
-    } else if (temperatureIcon == "02") {      
-        display.showAnimateIcon(ICON_PARTLYCLOUD, arrayLength(ICON_PARTLYCLOUD));
-    } else if (temperatureIcon == "03" || temperatureIcon == "04") {      
-        display.showAnimateIcon(ICON_CLOUDY, arrayLength(ICON_CLOUDY));
-    } else if (temperatureIcon == "09" || temperatureIcon == "10") {
-        display.showAnimateIcon(ICON_RAIN, arrayLength(ICON_RAIN));
-    } else if (temperatureIcon == "11") {
-        display.showAnimateIcon(ICON_THUNDER, arrayLength(ICON_THUNDER));
-    } else if (temperatureIcon == "13") {  
-        display.showAnimateIcon(ICON_SNOW, arrayLength(ICON_SNOW));
-    } else if (temperatureIcon == "50") {
-        display.showAnimateIcon(ICON_MIST, arrayLength(ICON_MIST));
-    } else {
-        display.showAnimateIcon(ICON_SUN, arrayLength(ICON_SUN));
-    }
-    
-    lastTemperatureIcon = temperatureIcon;
-}
-
 void WeatherApp::askServer() 
 {
     Config& config = Config::getInstance();
@@ -48,9 +21,9 @@ void WeatherApp::askServer()
     HTTPClient http;
     WiFiClient client;
 
-    // Serial.println(config.data.weather_location);
+    String url = ("http://api.openweathermap.org/data/2.5/weather?id=") + String(config.data.weather_location) +("&appid=")+ String(config.data.weather_key) + ("&units=metric");
 
-    http.begin(("http://api.openweathermap.org/data/2.5/weather?id=") + String(config.data.weather_location) +("&appid=")+ String(config.data.weather_key) + ("&units=metric"));
+    http.begin(client, url.c_str());
 
     int httpCode = http.GET();
     Serial.println(httpCode);
@@ -77,6 +50,33 @@ void WeatherApp::askServer()
     }
 
     http.end();
+}
+
+void WeatherApp::showIcon(Display& display) 
+{
+    if(lastTemperatureIcon != temperatureIcon) {
+        display.resetIconAnimation();
+    } 
+
+    if(temperatureIcon == "01") {
+        display.showAnimateIcon(ICON_SUN, arrayLength(ICON_SUN));
+    } else if (temperatureIcon == "02") {      
+        display.showAnimateIcon(ICON_PARTLYCLOUD, arrayLength(ICON_PARTLYCLOUD));
+    } else if (temperatureIcon == "03" || temperatureIcon == "04") {      
+        display.showAnimateIcon(ICON_CLOUDY, arrayLength(ICON_CLOUDY));
+    } else if (temperatureIcon == "09" || temperatureIcon == "10") {
+        display.showAnimateIcon(ICON_RAIN, arrayLength(ICON_RAIN));
+    } else if (temperatureIcon == "11") {
+        display.showAnimateIcon(ICON_THUNDER, arrayLength(ICON_THUNDER));
+    } else if (temperatureIcon == "13") {  
+        display.showAnimateIcon(ICON_SNOW, arrayLength(ICON_SNOW));
+    } else if (temperatureIcon == "50") {
+        display.showAnimateIcon(ICON_MIST, arrayLength(ICON_MIST));
+    } else {
+        display.showAnimateIcon(ICON_SUN, arrayLength(ICON_SUN));
+    }
+    
+    lastTemperatureIcon = temperatureIcon;
 }
 
 void WeatherApp::beforeRender() 
