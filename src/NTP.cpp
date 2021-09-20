@@ -10,11 +10,13 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 void NTP::updateTime() {
+    Serial.println("Time updated via NTP.");
+
     timeClient.update();
 
     time_t rawtime = timeClient.getEpochTime();
     struct tm * ti;
-    ti = localtime (&rawtime);
+    ti = localtime(&rawtime);
 
     // Year
     uint16_t year = ti->tm_year + 1900;
@@ -30,20 +32,16 @@ void NTP::updateTime() {
 void NTP::loop() {
     // Update Time by set time    
     unsigned long currentMillis = millis();
-    if ((unsigned long)(currentMillis - prevTime) >= ((1000 * 60) * 60)) { 
+    if ((unsigned long)(currentMillis - prevTime) >= ((1000 * 60) * 60) || firstStart) { 
         updateTime();
-        prevTime = currentMillis;
-
-        Serial.println( "Time updated via NTP." );
+        prevTime = currentMillis;   
+        firstStart = false;     
     }
-
-    // updateTime(); // TODO: set time first startup
 }
 
 void NTP::setup() {
-
     while ( WiFi.status() != WL_CONNECTED ) {
-        Serial.println( "Wifi not connect, NTP cant be load.." );
+        Serial.println("Wifi not connect, NTP cant be load.");
     }
 
     timeClient.begin();

@@ -46,7 +46,7 @@ class ApplicationManager {
         void btn2_process();
         void btn3_process();
         void setup();
-        void nextApp(bool = false);
+        void nextApp(bool fromButton);
         void loop();
 };
 

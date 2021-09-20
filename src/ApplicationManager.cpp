@@ -23,7 +23,7 @@ void ApplicationManager::autoTimerAppSwitch()
 {    
     unsigned long currentMillis = millis();
     if ((unsigned long)(currentMillis - prevAppSwitchMillis) >= intervalSwitchApp) {
-        ApplicationManager::getInstance().nextApp();
+        ApplicationManager::getInstance().nextApp(false);
 
         if(storedAppView == activeAppView) {            
             resumeAutoSwitch();
@@ -150,10 +150,12 @@ void ApplicationManager::nextApp(bool fromButton)
     } else if(activeAppView == 3) {
         application = new TemperatureApp(2); // Humidity
     } else if(activeAppView == 4 && fromButton) {
+    // } else if(activeAppView == 4) {
         application = new BrightnessApp();
     } else if(activeAppView == 5 && fromButton) {
+    // } else if(activeAppView == 5) {
         canSwitchApp = false;
-        application = new ShowTextApp("IP:" + IP_ADDRESS, false, 100, COLOR_RED);
+        application = new ShowTextApp("IP:" + IP_ADDRESS, false, 80, COLOR_RED);
     } else if(activeAppView == 6) {
         application = new DrawApp();
     } else {
@@ -183,7 +185,7 @@ void ApplicationManager::loop()
 
     if (btn2LastState == LOW && btn2State == HIGH)
     {
-        nextApp();
+        nextApp(true);
         Serial.println("TOUCHED 2");
     } 
 

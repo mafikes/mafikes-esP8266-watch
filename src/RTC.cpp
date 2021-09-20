@@ -14,10 +14,11 @@ DateTime RTC::now() {
 
 void RTC::setup() {
     if (!rtcTime.begin()) {
-        Serial.println("Couldn't find RTC");        
+        Serial.println("Couldn't find RTC");      
     }
  
     if (rtcTime.lostPower()) {
         Serial.println("RTC lost power, waiting for NTP refresh!");
+        // rtcTime.adjust(DateTime(2016, 3, 30, 12, 40, 20));
     }
 }

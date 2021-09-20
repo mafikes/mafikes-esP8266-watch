@@ -13,12 +13,11 @@
 Wifi wifi;
 NTP ntp;
 
-RTC& rtc = RTC::getInstance();
-
 Config& config = Config::getInstance();
 ApplicationManager& applicationManager = ApplicationManager::getInstance();
 Display& display = Display::getInstance();
 AutoBrightness autoBrightness;
+RTC& rtc = RTC::getInstance();
 
 void setup() {
     delay(2000);
