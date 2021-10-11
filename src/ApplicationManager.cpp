@@ -149,10 +149,8 @@ void ApplicationManager::nextApp(bool fromButton)
     } else if(activeAppView == 3) {
         application = new TemperatureApp(2); // Humidity
     } else if(activeAppView == 4 && fromButton) {
-    // } else if(activeAppView == 4) {
         application = new BrightnessApp();
     } else if(activeAppView == 5 && fromButton) {
-    // } else if(activeAppView == 5) {
         canSwitchApp = false;
         application = new ShowTextApp("IP:" + IP_ADDRESS, false, 80, COLOR_RED);
     } else if(activeAppView == 6) {
