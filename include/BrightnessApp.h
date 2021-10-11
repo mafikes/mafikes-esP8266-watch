@@ -8,7 +8,7 @@ class BrightnessApp : public ApplicationView
 {
     private:
         int activeBrightness = 1;
-        uint32_t brightness[10] = {1, 15, 25, 50, 100, 125, 175, 200, 225, 255};
+        uint32_t brightness[7] = {1, 15, 25, 50, 100, 125, 130};
     public:        
         void btn1_process() override;        
         void btn3_process() override;        

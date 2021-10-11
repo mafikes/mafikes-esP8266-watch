@@ -23,8 +23,10 @@ void BrightnessApp::btn1_process()
 
 void BrightnessApp::btn3_process() 
 {
+    Serial.println(activeBrightness);
+    
     activeBrightness++;
-    if(activeBrightness > 10) activeBrightness = 10;
+    if(activeBrightness > 7) activeBrightness = 6;
     Display::getInstance().setBrightness(brightness[activeBrightness]);
 } 
 
