@@ -2,17 +2,17 @@
 #include <Display.h>
 #include "Settings.h"
 #include <Config.h>
+#include <ApplicationManager.h>
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>
-#include "LittleFS.h"
 #include <ESP8266mDNS.h>
-#include "ArduinoJson.h"
 
-#include <ApplicationManager.h>
+#include "LittleFS.h"
+#include "ArduinoJson.h"
 
 AsyncWebServer server(80);
 DNSServer dns;
@@ -24,7 +24,7 @@ void Wifi::setup() {
     }
 
     Serial.println(F("WiFi Setup"));
-    AsyncWiFiManager wifiManager(&server,&dns);
+    AsyncWiFiManager wifiManager(&server, &dns);
     wifiManager.setTimeout(180); 
 
     if(!wifiManager.autoConnect("MAFIKES WATCH")) { 
@@ -38,13 +38,22 @@ void Wifi::setup() {
 
     IP_ADDRESS = WiFi.localIP().toString();
 
-    Serial.println(F("WiFi connected...")); 
-    Serial.println(F("Use this URL to connect: http://")); Serial.println(IP_ADDRESS+"/");
-
-    if (!MDNS.begin("mafikeswatch")) {             // Start the mDNS responder for esp8266.local
-        Serial.println("Error setting up MDNS responder!");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.println("Connecting to WiFi..");
     }
 
+    Serial.println(F("WiFi connected...")); 
+    Serial.println(F("Use this URL to connect: http://")); Serial.println(IP_ADDRESS+"/");
+        
+    if (MDNS.begin("mafikeswatch"), WiFi.localIP()) { // Start in local address
+        Serial.println("Address mafikeswatch.local started!");
+        MDNS.addService("http", "tcp", 80);
+    } else {
+        Serial.println("Error setting up MDNS responder!");
+        return;
+    }
+    
     // Homepage
     server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
@@ -194,6 +203,6 @@ void Wifi::setup() {
 }
 
 void Wifi::loop() {
-
+    MDNS.update();
 }
 
