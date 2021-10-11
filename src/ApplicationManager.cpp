@@ -2,7 +2,6 @@
 
 #include <Display.h>
 #include <WString.h>
-#include <Ticker.h>
 #include "Settings.h"
 #include <Config.h>
 
