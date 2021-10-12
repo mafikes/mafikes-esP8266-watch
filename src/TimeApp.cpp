@@ -43,11 +43,23 @@ void TimeApp::render(Display& display)
     DateTime now = RTC::getInstance().now();
 
     if(clockTheme == 1) {        
-        // display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()) + ":" + repairDigit(second()), false, {2, 0}, clockColor);
         display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()) + ":" + repairDigit(now.second()), false, {2, 0}, clockColor);
+    } else if(clockTheme == 2) {       
+        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {8, 0}, clockColor);        
     } else {
-        // display.drawText(repairDigit(hour()) + ":" + repairDigit(minute()), false, {8, 0}, clockColor);
         display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {8, 0}, clockColor);
+
+        // Print Day of Week under clock
+        int offset = 0;
+        for(int day = 1; day <= 7; day++) {
+            if(day == now.dayOfTheWeek()) {
+                display.drawLine(2 + offset, 7, 4 + offset, 7, clockColor);
+            } else {
+                display.drawLine(2 + offset, 7, 4 + offset, 7, {188, 188, 188});
+            }  
+            offset += 4;      
+        }
+
         clockTheme = 0;
     }
 
