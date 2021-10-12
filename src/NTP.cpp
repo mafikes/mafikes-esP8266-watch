@@ -26,7 +26,18 @@ void NTP::updateTime() {
     uint8_t month = ti->tm_mon + 1;
     String monthStr = month < 10 ? "0" + String(month) : String(month);
 
-    RTC::getInstance().setNewTime(DateTime(year, month, timeClient.getDay(), timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds()));
+    // Day
+    uint8_t day = ti->tm_mday;
+    String dayStr = day < 10 ? "0" + String(day) : String(day);
+
+    Serial.print("NTP Date: ");
+    Serial.print(day);
+    Serial.print(".");
+    Serial.print(month);
+    Serial.print(".");
+    Serial.println(year);
+    
+    RTC::getInstance().setNewTime(DateTime(year, month, day, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds()));
 }
 
 void NTP::loop() {
