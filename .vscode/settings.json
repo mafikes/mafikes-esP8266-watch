@@ -39,7 +39,9 @@
         "typeinfo": "cpp",
         "regex": "cpp",
         "bitset": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "optional": "cpp",
+        "system_error": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
