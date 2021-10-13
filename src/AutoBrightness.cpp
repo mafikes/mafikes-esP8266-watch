@@ -15,16 +15,18 @@ void AutoBrightness::loadBrightness()
     Display& display = Display::getInstance();
     int brightness = 0;
 
-    if(lightLevel < 80) {
-        brightness = 5;
-    } else if(lightLevel < 120) {
+    if(lightLevel < 40) {
+        brightness = 2;
+    } else if(lightLevel < 60) {
         brightness = 10;
-    } else if(lightLevel < 200) {
+    } else if(lightLevel < 80) {
+        brightness = 20;
+    } else if(lightLevel < 120) {
         brightness = 30;
-    } else if (lightLevel < 300) {
-        brightness = 50;
+    } else if(lightLevel < 200) {
+        brightness = 40;
     } else {
-        brightness = 70;
+        brightness = 60;
     }
 
     display.setBrightness(brightness);
@@ -36,9 +38,10 @@ void AutoBrightness::loop()
     
     if ((unsigned long)(currentMillis - prevTime) >= 5000) { // Every 5 seconds
         lightLevel = analogRead(LDR_PIN);
-        
+
+        Serial.print("Auto Light Level: ");
         Serial.println(lightLevel);
-        
+
         loadBrightness();
 
         prevTime = currentMillis;
