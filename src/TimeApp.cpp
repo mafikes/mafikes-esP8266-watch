@@ -42,6 +42,12 @@ void TimeApp::render(Display& display)
     display.clear();
     DateTime now = RTC::getInstance().now();
 
+    if(now.hour() == 165) { // LOW BATTERY ON RTC CHIP
+        display.drawText("LOW BTR!", false, {0, 0}, COLOR_RED);
+        display.show();
+        return;
+    }
+
     if(clockTheme == 1) {        
         display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()) + ":" + repairDigit(now.second()), false, {2, 0}, clockColor);
     } else if(clockTheme == 2) {       
