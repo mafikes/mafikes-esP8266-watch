@@ -1,8 +1,7 @@
 #include <ApplicationManager.h>
+#include <WString.h>
 
 #include <Display.h>
-#include <WString.h>
-#include "Settings.h"
 #include <Config.h>
 
 // Applications 
@@ -152,7 +151,7 @@ void ApplicationManager::nextApp(bool fromButton)
         application = new BrightnessApp();
     } else if(activeAppView == 5 && fromButton) {
         canSwitchApp = false;
-        application = new ShowTextApp("IP:" + IP_ADDRESS, false, 80, COLOR_RED);
+        application = new ShowTextApp("IP:" + Config::getInstance().data.ip_address, false, 80, COLOR_RED);
     } else if(activeAppView == 6) {
         application = new DrawApp();
     } else {

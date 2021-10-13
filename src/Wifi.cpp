@@ -1,6 +1,5 @@
 #include <Wifi.h>
 #include <Display.h>
-#include "Settings.h"
 #include <Config.h>
 #include <ApplicationManager.h>
 
@@ -36,7 +35,7 @@ void Wifi::setup() {
         ESP.restart(); //reset and try again 
     } 
 
-    IP_ADDRESS = WiFi.localIP().toString();
+    Config::getInstance().data.ip_address = WiFi.localIP().toString();
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
@@ -44,7 +43,7 @@ void Wifi::setup() {
     }
 
     Serial.println(F("WiFi connected...")); 
-    Serial.println(F("Use this URL to connect: http://")); Serial.println(IP_ADDRESS+"/");
+    Serial.println(F("Use this URL to connect: http://")); Serial.println(Config::getInstance().data.ip_address +"/");
         
     if (MDNS.begin("mafikeswatch"), WiFi.localIP()) { // Start in local address
         Serial.println("Address mafikeswatch.local started!");

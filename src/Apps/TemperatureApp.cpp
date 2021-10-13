@@ -1,10 +1,10 @@
 #include <TemperatureApp.h>
+#include <WString.h>
+#include "DHT.h"
 #include <Config.h>
 #include <Display.h>
 #include <Colors.h>
-#include <WString.h>
 #include <Icons.h>
-#include "DHT.h"
 #include <Helper.h>
 
 #define DHTPIN 14

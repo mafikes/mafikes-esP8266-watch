@@ -1,11 +1,11 @@
 #include <WeatherApp.h>
 #include <Display.h>
 #include <Colors.h>
-#include <WString.h>
 #include <Icons.h>
 #include <Helper.h>
 #include <Config.h>
 
+#include <WString.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266HTTPClient.h>

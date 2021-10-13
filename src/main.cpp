@@ -6,9 +6,11 @@
 #include <ApplicationManager.h>
 #include <Display.h>
 #include <Wifi.h>
-#include <NTP.h>
 #include <AutoBrightness.h>
+
+
 #include <RTC.h>
+#include <NTP.h>
 
 Wifi wifi;
 NTP ntp;
