@@ -12,10 +12,7 @@ class Display {
         Display();
         Display(Display const&);
         void operator = (Display const&);
-
-        Adafruit_NeoMatrix matrix;
-        uint32_t color(DisplayColor);
-
+                
         int lastShowedIcon = 0;
         int lastIconAnimationCount = 0;
         int loadingRepeated = 0;
@@ -29,6 +26,9 @@ class Display {
             return instance;
         }
 
+        Adafruit_NeoMatrix matrix;
+        uint32_t color(DisplayColor);
+        
         void clear();
         void refresh();
         void setBrightness(int);
