@@ -1,7 +1,6 @@
 #include <TimeApp.h>
 #include <Config.h>
 #include <RTC.h>
-#include <Icons.h>
 
 String TimeApp::repairDigit(int digit) 
 {
@@ -59,7 +58,7 @@ void TimeApp::render(Display& display)
         DisplayColor headerColor = clockColor;
 
         if(headerColor.red == COLOR_WHITE.red && headerColor.blue == COLOR_WHITE.blue && headerColor.green == COLOR_WHITE.green) {
-            headerColor = COLOR_GRAY;
+            headerColor = COLOR_RED;
         }
 
         display.drawLine(0, 0, 8, 0, headerColor);
