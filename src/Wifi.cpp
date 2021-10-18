@@ -192,6 +192,25 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
+    server.on("/custom-color-watch", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("red", false) && request->hasParam("green", false) && request->hasParam("blue", false)) {
+            String red = request->getParam("red")->value();
+            String green = request->getParam("green")->value();
+            String blue = request->getParam("blue")->value();
+            Serial.println(red);  
+            Serial.println(green);  
+            Serial.println(blue);            
+            DisplayColor watchColor = {red.toInt(), green.toInt(), blue.toInt()};            
+
+            Config& config = Config::getInstance();    
+            config.data.watch_color_custom = true;            
+            config.data.watch_color = watchColor;       
+            config.save();
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
     server.on("/restart", HTTP_GET, [](AsyncWebServerRequest *request) {
         ESP.reset();
         request->send(200, "text/plain", "OK");

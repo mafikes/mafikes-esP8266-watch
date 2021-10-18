@@ -4,6 +4,8 @@
 #include <SPI.h>
 #include "ArduinoJson.h"
 #include <WString.h>
+#include <Display.h>
+#include <Colors.h>
 
 void Config::load() {    
     File configFile = LittleFS.open(configPath, "r");
@@ -25,6 +27,11 @@ void Config::load() {
     data.view_app_switch_time = doc["view_app_switch_time"];
     data.weather_key = doc["weather_key"].as<String>();
     data.weather_location = doc["weather_location"].as<String>();
+    data.watch_color_custom = doc["watch_color_custom"];
+    Serial.println(doc["watch_color"].as<String>());
+    DisplayColor watchColor = {doc["watch_color"][0], doc["watch_color"][1], doc["watch_color"][2]};
+    data.watch_color = watchColor;
+    // data.watch_color = COLOR_YELLOW;
 
     configFile.close();
 
@@ -51,7 +58,13 @@ void Config::save()
     doc["view_main_switch_time"] = data.view_main_switch_time;
     doc["view_app_switch_time"] = data.view_app_switch_time;
     doc["weather_key"] = data.weather_key;
-    doc["weather_location"] = data.weather_location;
+    doc["watch_color_custom"] = data.watch_color_custom;
+
+    JsonArray newColor = doc.createNestedArray("watch_color");
+    newColor.add(data.watch_color.red);
+    newColor.add(data.watch_color.green);
+    newColor.add(data.watch_color.blue);
+    // doc["watch_color"] = {data.watch_color.red, data.watch_color.green, data.watch_color.blue};
 
     if(serializeJson(doc, file) == 0) {
         Serial.println(F("Config: Failed to write file."));

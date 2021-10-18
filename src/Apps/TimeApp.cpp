@@ -10,9 +10,11 @@ String TimeApp::repairDigit(int digit)
 }
 
 void TimeApp::beforeRender() {
-    clockTheme = Config::getInstance().data.watch_type;
-    clockColorActive = Config::getInstance().data.watch_type_color;
-    clockColor = getColor();
+    Config& config = Config::getInstance();
+
+    clockTheme = config.data.watch_type;
+    clockColorActive = config.data.watch_type_color;
+    clockColor = getColor();    
 }
 
 DisplayColor TimeApp::getColor()
@@ -43,6 +45,13 @@ void TimeApp::render(Display& display)
 {    
     display.clear();
     DateTime now = RTC::getInstance().now();
+
+    if(Config::getInstance().data.watch_color_custom) {
+        clockColor = Config::getInstance().data.watch_color;
+        // Serial.println(clockColor.red);
+    } else {
+        clockColor = getColor();
+    }    
 
     if(now.hour() == 165) { // LOW BATTERY ON RTC CHIP
         display.drawText("LOW BTR!", false, {0, 0}, COLOR_RED);

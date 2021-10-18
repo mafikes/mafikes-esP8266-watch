@@ -3,6 +3,7 @@
 
 #include "ArduinoJson.h"
 #include <WString.h>
+#include <Display.h>
 
 struct ConfigFile {
     int brightness;
@@ -17,6 +18,9 @@ struct ConfigFile {
     String ip_address;
     String weather_key;
     String weather_location;
+
+    bool watch_color_custom;
+    DisplayColor watch_color = {255, 255, 255};
 };
 
 class Config
