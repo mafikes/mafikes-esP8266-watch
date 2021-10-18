@@ -12,6 +12,7 @@
 #include <ShowTextApp.h>
 #include <DrawApp.h>
 #include <DateApp.h>
+#include <Anniversary.h>
 
 // Buttons PIN
 #define BTN1_PIN 13
@@ -150,12 +151,14 @@ void ApplicationManager::nextApp(bool fromButton)
         application = new TemperatureApp(0); // Local temperature
     } else if(activeAppView == 4) {
         application = new TemperatureApp(2); // Humidity
-    } else if(activeAppView == 5 && fromButton) {
-        application = new BrightnessApp();
+    } else if(activeAppView == 5) {
+        application = new Anniversary(); 
     } else if(activeAppView == 6 && fromButton) {
+        application = new BrightnessApp();
+    } else if(activeAppView == 7 && fromButton) {
         canSwitchApp = false;
         application = new ShowTextApp("IP:" + Config::getInstance().data.ip_address, false, 80, COLOR_RED);
-    } else if(activeAppView == 7) {
+    } else if(activeAppView == 8) {
         application = new DrawApp();
     } else {
         application = new TimeApp();
