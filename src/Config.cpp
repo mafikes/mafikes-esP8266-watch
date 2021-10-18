@@ -63,8 +63,7 @@ void Config::save()
     JsonArray newColor = doc.createNestedArray("watch_color");
     newColor.add(data.watch_color.red);
     newColor.add(data.watch_color.green);
-    newColor.add(data.watch_color.blue);
-    // doc["watch_color"] = {data.watch_color.red, data.watch_color.green, data.watch_color.blue};
+    newColor.add(data.watch_color.blue);   
 
     if(serializeJson(doc, file) == 0) {
         Serial.println(F("Config: Failed to write file."));
