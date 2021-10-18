@@ -12,6 +12,7 @@ let _elements = {
     switchMainTime: document.querySelector(".js-view-switch-main"),
     switchAppTime: document.querySelector(".js-view-switch-app"),
     restartWatch: document.querySelector(".js-restart-device"),
+    customColorWatch: document.querySelector('.js-custom-color-watch')
 };
 
 /**
@@ -113,6 +114,18 @@ _elements.switchMainTime.addEventListener("change", (event) => {
 _elements.switchAppTime.addEventListener("change", (event) => {
     let value = event.target.value;
     sendRequest('switch-app-time', `?value=${value}`, () => {});
+});
+
+_elements.customColorWatch.addEventListener("change", (event) => {
+    let color = event.target.value;
+
+    let red = parseInt(color.slice(-6, -4), 16);
+    let green = parseInt(color.slice(-4, -2), 16);
+    let blue = parseInt(color.slice(-2), 16);
+
+    if(red == 0 && green == 0 && blue == 0) return;
+
+    sendRequest('custom-color-watch', `?red=${red}&green=${green}&blue=${blue}`, () => {});
 });
 
 // RELOAD 
