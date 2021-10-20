@@ -28,10 +28,10 @@ void Config::load() {
     data.weather_key = doc["weather_key"].as<String>();
     data.weather_location = doc["weather_location"].as<String>();
     data.watch_color_custom = doc["watch_color_custom"];
-    Serial.println(doc["watch_color"].as<String>());
-    DisplayColor watchColor = {doc["watch_color"][0], doc["watch_color"][1], doc["watch_color"][2]};
-    data.watch_color = watchColor;
-    // data.watch_color = COLOR_YELLOW;
+
+    data.watch_color[0] = doc["watch_color"][0]; 
+    data.watch_color[1] = doc["watch_color"][1];
+    data.watch_color[2] = doc["watch_color"][2];
 
     configFile.close();
 
@@ -48,7 +48,7 @@ void Config::save()
         return;
     }
 
-    StaticJsonDocument<500> doc;
+    StaticJsonDocument<600> doc;
 
     doc["brightness"] = data.brightness;
     doc["brightness_auto"] = data.brightness_auto;
@@ -57,13 +57,14 @@ void Config::save()
     doc["view_auto_switch"] = data.view_auto_switch;
     doc["view_main_switch_time"] = data.view_main_switch_time;
     doc["view_app_switch_time"] = data.view_app_switch_time;
-    doc["weather_key"] = data.weather_key;
+    doc["weather_key"] = String(data.weather_key);
+    doc["weather_location"] = String(data.weather_location);      
     doc["watch_color_custom"] = data.watch_color_custom;
 
     JsonArray newColor = doc.createNestedArray("watch_color");
-    newColor.add(data.watch_color.red);
-    newColor.add(data.watch_color.green);
-    newColor.add(data.watch_color.blue);   
+    newColor.add(data.watch_color[0]);
+    newColor.add(data.watch_color[1]);
+    newColor.add(data.watch_color[2]);   
 
     if(serializeJson(doc, file) == 0) {
         Serial.println(F("Config: Failed to write file."));

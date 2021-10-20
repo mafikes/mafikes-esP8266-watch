@@ -46,9 +46,10 @@ void TimeApp::render(Display& display)
     display.clear();
     DateTime now = RTC::getInstance().now();
 
-    if(Config::getInstance().data.watch_color_custom) {
-        clockColor = Config::getInstance().data.watch_color;
-        // Serial.println(clockColor.red);
+    if(Config::getInstance().data.watch_color_custom) {        
+        DisplayColor watchCustomColor = {Config::getInstance().data.watch_color[0], Config::getInstance().data.watch_color[1], Config::getInstance().data.watch_color[2]};    
+        clockColor = watchCustomColor; 
+        
     } else {
         clockColor = getColor();
     }    
@@ -115,6 +116,7 @@ void TimeApp::btn1_process()
     clockColor = getColor();
 
     Config& config = Config::getInstance();
+    config.data.watch_color_custom = false;
     config.data.watch_type_color = clockColorActive;
     config.save();
 }

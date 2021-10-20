@@ -20,7 +20,7 @@ struct ConfigFile {
     String weather_location;
 
     bool watch_color_custom;
-    DisplayColor watch_color = {255, 255, 255};
+    int watch_color[3] = {255, 255, 255};
 };
 
 class Config

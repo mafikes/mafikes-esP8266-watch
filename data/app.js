@@ -43,33 +43,25 @@ function sendRequest(method, data, callback) {
     xmlHttp.send(null);
 }
 
+function RGBToHex(r,g,b) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+
+    if (r.length == 1)
+        r = "0" + r;
+    if (g.length == 1)
+        g = "0" + g;
+    if (b.length == 1)
+        b = "0" + b;
+
+    return "#" + r + g + b;
+}
+
 /**
  * Load data from device
  */
 function loadData() {
-    function rgbaToHex(rgba) {
-        var inParts = rgba.substring(rgba.indexOf("(")).split(","),
-            r = parseInt(trim(inParts[0].substring(1)), 10),
-            g = parseInt(trim(inParts[1]), 10),
-            b = parseInt(trim(inParts[2]), 10),
-            a = parseFloat(trim(inParts[3].substring(0, inParts[3].length - 1))).toFixed(2);
-        var outParts = [
-          r.toString(16),
-          g.toString(16),
-          b.toString(16),
-          Math.round(a * 255).toString(16).substring(0, 2)
-        ];
-      
-        // Pad single-digit output values
-        outParts.forEach(function (part, i) {
-          if (part.length === 1) {
-            outParts[i] = '0' + part;
-          }
-        })
-      
-        return ('#' + outParts.join(''));
-    }
-
     sendRequest('config.json', '', (response) => {
         let data = JSON.parse(response);
         console.log('Config: success load data.', data);       
@@ -83,8 +75,8 @@ function loadData() {
         _elements.weatherLocation.value = data.weather_location;
         _elements.weatherApi.value = data.weather_key;
 
-        _elements.customColorWatch.value = rgbaToHex(data.watch_color);
-    });
+        _elements.customColorWatch.value = RGBToHex(data.watch_color[0], data.watch_color[1], data.watch_color[2]);
+    });    
 }
 
 // SWITCH BUTTONS

@@ -134,8 +134,7 @@ void Wifi::setup() {
             
             Config& config = Config::getInstance();
             config.data.weather_location = value;  
-            config.save();
-            
+            config.save();            
         }
 
         request->send(200, "text/plain", "OK");
@@ -197,14 +196,12 @@ void Wifi::setup() {
             String red = request->getParam("red")->value();
             String green = request->getParam("green")->value();
             String blue = request->getParam("blue")->value();
-            Serial.println(red);  
-            Serial.println(green);  
-            Serial.println(blue);            
-            DisplayColor watchColor = {red.toInt(), green.toInt(), blue.toInt()};            
-
+         
             Config& config = Config::getInstance();    
             config.data.watch_color_custom = true;            
-            config.data.watch_color = watchColor;       
+            config.data.watch_color[0] = red.toInt();
+            config.data.watch_color[1] = green.toInt();
+            config.data.watch_color[2] = blue.toInt(); 
             config.save();
         }
 
