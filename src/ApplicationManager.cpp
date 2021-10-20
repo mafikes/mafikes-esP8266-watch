@@ -155,7 +155,7 @@ void ApplicationManager::nextApp(bool fromButton)
     } else if(activeAppView == 6 && fromButton) {
         canSwitchApp = false;
         application = new ShowTextApp("IP:" + Config::getInstance().data.ip_address, false, 80, COLOR_RED);
-    } else if(activeAppView == 7) {
+    } else if(activeAppView == 7 && fromButton) {
         application = new DrawApp();
     } else {
         application = new TimeApp();
