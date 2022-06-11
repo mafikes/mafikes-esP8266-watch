@@ -12,7 +12,8 @@ let _elements = {
     switchMainTime: document.querySelector(".js-view-switch-main"),
     switchAppTime: document.querySelector(".js-view-switch-app"),
     restartWatch: document.querySelector(".js-restart-device"),
-    customColorWatch: document.querySelector('.js-custom-color-watch')
+    customColorWatch: document.querySelector('.js-custom-color-watch'),
+    timeOffset: document.querySelector('.js-time-offset')
 };
 
 /**
@@ -75,6 +76,8 @@ function loadData() {
         _elements.weatherLocation.value = data.weather_location;
         _elements.weatherApi.value = data.weather_key;
 
+        _elements.timeOffset.value = data.time_offset;
+
         _elements.customColorWatch.value = RGBToHex(data.watch_color[0], data.watch_color[1], data.watch_color[2]);
     });    
 }
@@ -108,6 +111,11 @@ document.querySelector(".js-show-text-clear").addEventListener("click", (event) 
 });
 
 // SETTINGS
+_elements.timeOffset.addEventListener("change", (event) => {
+    let value = event.target.value;
+    sendRequest('time-offset', `?value=${value}`, () => {});
+});
+
 _elements.brightnessAuto.addEventListener("change", (event) => {
     let value = event.target.value;
     sendRequest('brightness-auto', `?value=${value}`, () => {});

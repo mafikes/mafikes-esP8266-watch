@@ -10,7 +10,6 @@
 #include <TemperatureApp.h>
 #include <BrightnessApp.h>
 #include <ShowTextApp.h>
-#include <DrawApp.h>
 #include <DateApp.h>
 
 // Buttons PIN
@@ -23,6 +22,8 @@ void ApplicationManager::autoTimerAppSwitch()
     unsigned long currentMillis = millis();
     if ((unsigned long)(currentMillis - prevAppSwitchMillis) >= intervalSwitchApp) {
         ApplicationManager::getInstance().nextApp(false);
+
+        Serial.println("Switch view");
 
         if(storedAppView == activeAppView) {            
             resumeAutoSwitch();
@@ -37,6 +38,8 @@ void ApplicationManager::autoSwitchMainTimer()
     unsigned long currentMillis = millis();
     if ((unsigned long)(currentMillis - prevMainSwitchMillis) >= intervalMainSwitchApp) {
         storedAppView = activeAppView;
+
+        Serial.println("Start auto switch view");
 
         autoSwitchRun = true;
 
@@ -94,6 +97,7 @@ void ApplicationManager::loadSwichTime()
     intervalMainSwitchApp = config.data.view_main_switch_time;  
     intervalSwitchApp = config.data.view_app_switch_time; 
 
+ 
     resumeAutoSwitch();
 }
 
@@ -137,6 +141,8 @@ void ApplicationManager::showMainApp()
 
 void ApplicationManager::nextApp(bool fromButton) 
 {
+    Config& config = Config::getInstance();
+
     canSwitchApp = true;
     application->clear();
       
@@ -155,13 +161,17 @@ void ApplicationManager::nextApp(bool fromButton)
     } else if(activeAppView == 6 && fromButton) {
         canSwitchApp = false;
         application = new ShowTextApp("IP:" + Config::getInstance().data.ip_address, false, 80, COLOR_RED);
-    } else if(activeAppView == 7 && fromButton) {
-        application = new DrawApp();
     } else {
         application = new TimeApp();
         activeAppView = 0;
     }
 
+    if(config.data.view_auto_switch && fromButton) {
+        changeSwitchViewAuto(false);
+    } else if(config.data.view_auto_switch && !fromButton) {
+        changeSwitchViewAuto(true);
+    }
+    
     application->beforeRender();
 }   
 
@@ -171,7 +181,7 @@ void ApplicationManager::loop()
         if(canSwitchApp && !autoSwitchRun) autoSwitchMainTimer();
         if(canSwitchApp && autoSwitchRun) autoTimerAppSwitch();
     }
- 
+
     int btn1State = digitalRead(BTN1_PIN);
     int btn2State = digitalRead(BTN2_PIN);
     int btn3State = digitalRead(BTN3_PIN);

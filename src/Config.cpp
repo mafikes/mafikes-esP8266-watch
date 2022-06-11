@@ -28,6 +28,7 @@ void Config::load() {
     data.weather_key = doc["weather_key"].as<String>();
     data.weather_location = doc["weather_location"].as<String>();
     data.watch_color_custom = doc["watch_color_custom"];
+    data.time_offset = doc["time_offset"];
 
     data.watch_color[0] = doc["watch_color"][0]; 
     data.watch_color[1] = doc["watch_color"][1];
@@ -60,7 +61,8 @@ void Config::save()
     doc["weather_key"] = String(data.weather_key);
     doc["weather_location"] = String(data.weather_location);      
     doc["watch_color_custom"] = data.watch_color_custom;
-
+    doc["time_offset"] = data.time_offset;
+    
     JsonArray newColor = doc.createNestedArray("watch_color");
     newColor.add(data.watch_color[0]);
     newColor.add(data.watch_color[1]);

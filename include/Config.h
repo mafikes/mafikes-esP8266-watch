@@ -19,6 +19,7 @@ struct ConfigFile {
     String weather_key;
     String weather_location;
 
+    int time_offset;
     bool watch_color_custom;
     int watch_color[3] = {255, 255, 255};
 };

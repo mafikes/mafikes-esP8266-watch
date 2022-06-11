@@ -23,10 +23,12 @@ void Wifi::setup() {
     }
 
     Serial.println(F("WiFi Setup"));
+    
+    WiFi.persistent(true); 
     AsyncWiFiManager wifiManager(&server, &dns);
     wifiManager.setTimeout(180); 
 
-    if(!wifiManager.autoConnect("MAFIKES WATCH")) { 
+    if(!wifiManager.autoConnect("MAFIKESWATCH")) { 
         Display::getInstance().drawText("Failed", true, {0, 0});
         Display::getInstance().show();
         
@@ -202,6 +204,20 @@ void Wifi::setup() {
             config.data.watch_color[0] = red.toInt();
             config.data.watch_color[1] = green.toInt();
             config.data.watch_color[2] = blue.toInt(); 
+            config.save();
+        }
+
+        request->send(200, "text/plain", "OK");
+    });
+
+    server.on("/time-offset", HTTP_GET, [](AsyncWebServerRequest *request){
+        if(request->hasParam("value")) {
+            String value = request->getParam("value")->value();
+            
+            int time = value.toInt();
+
+            Config& config = Config::getInstance();    
+            config.data.time_offset = time;        
             config.save();
         }
 

@@ -3,15 +3,16 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <RTC.h>
+#include <Config.h>
 
-const long utcOffsetInSeconds = 3600 * 2; // + 2 hours
-
+const long utcOffsetInSeconds = 0; // + 2 hours
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 void NTP::updateTime() {
     Serial.println("Time updated via NTP.");
 
+    timeClient.setTimeOffset(3600 * Config::getInstance().data.time_offset);
     timeClient.update();
 
     time_t rawtime = timeClient.getEpochTime();
