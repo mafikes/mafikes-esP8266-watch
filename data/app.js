@@ -1,165 +1,185 @@
-document.addEventListener("DOMContentLoaded", function(event) { 
-    loadData();
-});
+const control = () => {
+  return {
+    data: {
+      brightness: 10,
+      brightness_auto: 1,
+      view_main_switch_time: 0,
+      view_app_switch_time: 0,
+      time_update: 1,
+      weather_location: 0,
+      weather_key: 0,
+      time_offset: 0,
+      show_text: "",
+      custom_color_watch: null,
+      loading: false,
+      loadingTimeout: null,
+      error: false,
+      error_text: "",
+      errorTimeout: null,
+    },
 
-let _elements = {
-    switchButtons: document.querySelectorAll(".js-switch-button"),
-    brightness: document.querySelector(".js-slider-brightness"),
-    brightnessAuto: document.querySelector(".js-brightness-auto"),
-    showText: document.querySelector(".js-show-text-show"),
-    weatherLocation: document.querySelector(".js-weather-location"),
-    weatherApi: document.querySelector(".js-weather-api"),
-    switchMainTime: document.querySelector(".js-view-switch-main"),
-    switchAppTime: document.querySelector(".js-view-switch-app"),
-    restartWatch: document.querySelector(".js-restart-device"),
-    customColorWatch: document.querySelector('.js-custom-color-watch'),
-    timeOffset: document.querySelector('.js-time-offset')
-};
+    createLoading: function () {
+      this.data.loading = true;
+      clearTimeout(this.data.loadingTimeout);
+    },
 
-/**
- * Send Request Data
- * @param {*} method 
- * @param {*} data 
- * @param {*} callback 
- */
-function sendRequest(method, data, callback) {
-    let notify = document.querySelector('.modal_notification');
-    notify.classList.add('show');
+    clearLoading: function (timeout = 400) {
+      let _this = this;
+      this.data.loadingTimeout = setTimeout(function () {
+        _this.data.loading = false;
+      }, timeout);
+    },
 
-    let url =`/${method}${data}`;
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function (notify) {
-   
-    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-        callback(xmlHttp.responseText);
-        setTimeout(function() {
-            document.querySelector('.modal_notification').classList.remove("show");
-        }, 300);
-    }
-    };
+    simulateButtonClick: function (buttonIndex) {
+      this.sendRequest("change-view", `?button=${buttonIndex}`);
+    },
 
-    console.log(url);
+    showText: function () {
+      if (!this.data.show_text) return;
+      this.sendRequest("show-text", `?value=${this.data.show_text}`);
+    },
 
-    xmlHttp.open("GET", url, true);
-    xmlHttp.send(null);
-}
+    hideText: function () {
+      this.data.show_text = "";
+      this.sendRequest("show-main-app");
+    },
 
-function RGBToHex(r,g,b) {
-    r = r.toString(16);
-    g = g.toString(16);
-    b = b.toString(16);
+    flashError: function (text) {
+      this.data.loading = false;
+      this.data.error = true;
+      this.data.error_text = text;
 
-    if (r.length == 1)
-        r = "0" + r;
-    if (g.length == 1)
-        g = "0" + g;
-    if (b.length == 1)
-        b = "0" + b;
+      let _this = this;
+      clearTimeout(this.data.errorTimeout);
+      this.data.errorTimeout = setTimeout(function () {
+        _this.data.error = false;
+        console.log("aa");
+      }, 2000);
+    },
 
-    return "#" + r + g + b;
-}
+    setWatchColor: function () {
+      let color = this.data.custom_color_watch;
+      let red = parseInt(color.slice(-6, -4), 16);
+      let green = parseInt(color.slice(-4, -2), 16);
+      let blue = parseInt(color.slice(-2), 16);
 
-/**
- * Load data from device
- */
-function loadData() {
-    sendRequest('config.json', '', (response) => {
+      if (red == 0 && green == 0 && blue == 0) return;
+
+      this.sendRequest(
+        "custom-color-watch",
+        `?red=${red}&green=${green}&blue=${blue}`
+      );
+    },
+
+    syncTime: function () {
+      this.sendRequest("sync-time");
+    },
+
+    customBrightness: function () {
+      this.sendRequest("brightness", `?value=${this.data.brightness}`);
+    },
+
+    save: function () {
+      let data = {
+        brightness_auto: this.data.brightness_auto,
+        custom_color_watch: this.data.custom_color_watch,
+        time_offset: this.data.time_offset,
+        view_main_switch_time: this.data.view_main_switch_time,
+        view_app_switch_time: this.data.view_app_switch_time,
+        weather_location: this.data.weather_location,
+        weather_key: this.data.weather_key,
+        time_update_interval: this.data.time_update_interval,
+      };
+
+      const xhr = new XMLHttpRequest();
+      let _this = this;
+      this.createLoading();
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const response = JSON.parse(xhr.responseText);
+          _this.clearLoading();
+        }
+      };
+
+      xhr.open("POST", "/save");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.send(JSON.stringify(data));
+    },
+
+    loadData: function () {
+      this.createLoading();
+      let _this = this;
+
+      this.sendRequest("config.json", null, (response) => {
         let data = JSON.parse(response);
-        console.log('Config: success load data.', data);       
-        
-        _elements.brightness.value = data.brightness;
-        _elements.brightnessAuto.value = data.brightness_auto == true ? 1 : 0;        
+        console.log("CONFIG:", data);
 
-        _elements.switchMainTime.value = data.view_main_switch_time;
-        _elements.switchAppTime.value = data.view_app_switch_time;
+        _this.data.brightness = data.brightness;
+        _this.data.brightnessAuto = data.brightness_auto == true ? 1 : 0;
 
-        _elements.weatherLocation.value = data.weather_location;
-        _elements.weatherApi.value = data.weather_key;
+        _this.data.view_main_switch_time = data.view_main_switch_time;
+        _this.data.switchAppTime = data.view_app_switch_time;
 
-        _elements.timeOffset.value = data.time_offset;
+        _this.data.weather_location = data.weather_location;
+        _this.data.weather_key = data.weather_key;
 
-        _elements.customColorWatch.value = RGBToHex(data.watch_color[0], data.watch_color[1], data.watch_color[2]);
-    });    
-}
+        _this.data.time_offset = data.time_offset;
 
-// SWITCH BUTTONS
-_elements.switchButtons.forEach( (button, key) => {
-    button.addEventListener("click", (event) => {
-      let buttonIndex = event.target.dataset.button;
-      if(buttonIndex) sendRequest('change-view', `?button=${buttonIndex}`, () => {});
-      console.log(event.target.dataset.button);
-    });
-});
+        _this.data.custom_color_watch = _this.rgbToHex(
+          data.watch_color[0],
+          data.watch_color[1],
+          data.watch_color[2]
+        );
 
-// BRIGHTNESS
-_elements.brightness.addEventListener("change", (event) => {
-    let value = event.target.value; 
-    _elements.brightnessAuto.value = 0;
-    sendRequest('brightness', `?value=${value}`, () => {});
-});
+        this.clearLoading();
+      });
+    },
 
-// SHOW TEXT
-_elements.showText.addEventListener("click", (event) => {
-    let value = document.querySelector(".js-show-text-value").value; 
-    if(value) sendRequest('show-text', `?value=${value}`, () => {});
-});
-document.querySelector(".js-show-text-clear").addEventListener("click", (event) => {
-    if(document.querySelector(".js-show-text-value").value) {
-        document.querySelector(".js-show-text-value").value = "";
-        sendRequest('show-main-app', '', () => {});
-    }
-});
+    sendRequest: function (method, data = null, callback = null) {
+      this.createLoading();
 
-// SETTINGS
-_elements.timeOffset.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('time-offset', `?value=${value}`, () => {});
-});
+      const url = data ? `/${method}${data}` : `/${method}`;
+      let xhr = new XMLHttpRequest();
+      let _this = this;
 
-_elements.brightnessAuto.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('brightness-auto', `?value=${value}`, () => {});
-});
+      xhr.onreadystatechange = function (notify) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          if (typeof callback === "function") callback(xhr.responseText);
+          _this.clearLoading();
+        }
+      };
 
-_elements.weatherApi.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('change-weather-api', `?value=${value}`, () => {});
-});
+      console.log("URL", url);
 
-_elements.weatherLocation.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('change-weather-location', `?value=${value}`, () => {});
-});
+      xhr.open("GET", url, true);
+      xhr.send();
+    },
 
-_elements.switchMainTime.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('switch-main-time', `?value=${value}`, () => {});
-});
+    rgbToHex: function (r, g, b) {
+      r = r.toString(16);
+      g = g.toString(16);
+      b = b.toString(16);
 
-_elements.switchAppTime.addEventListener("change", (event) => {
-    let value = event.target.value;
-    sendRequest('switch-app-time', `?value=${value}`, () => {});
-});
+      if (r.length == 1) r = "0" + r;
+      if (g.length == 1) g = "0" + g;
+      if (b.length == 1) b = "0" + b;
 
-_elements.customColorWatch.addEventListener("change", (event) => {
-    let color = event.target.value;
+      return "#" + r + g + b;
+    },
 
-    let red = parseInt(color.slice(-6, -4), 16);
-    let green = parseInt(color.slice(-4, -2), 16);
-    let blue = parseInt(color.slice(-2), 16);
+    restartDevice: function () {
+      if (confirm("Are you sure with restart watch?")) {
+        this.sendRequest("restart", null, () => {
+          setTimeout(function () {
+            location.reload();
+          }, 12000);
+        });
+      }
+    },
 
-    if(red == 0 && green == 0 && blue == 0) return;
-
-    sendRequest('custom-color-watch', `?red=${red}&green=${green}&blue=${blue}`, () => {});
-});
-
-// RELOAD 
-_elements.restartWatch.addEventListener("click", (event) => {
-    if(confirm('Are you sure with restart watch?')) {
-        sendRequest('restart', ``, () => {});
-    }
-});
-
-document.querySelector(".js-reload").addEventListener("click", (event) => {
-    location.reload();
-});
+    reloadPage: () => {
+      location.reload();
+    },
+  };
+};

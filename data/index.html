@@ -3,13 +3,78 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="app.css" />
+    <script src="alpine.min.js" async></script>
 
     <title>MafikesWatch Control</title>
   </head>
-  <body>  
-    <div class="modal_notification">    
-        <span>Please wait. Applying changes...</span>
+  <body x-data="control()" x-init="loadData()">
+    <div class="modal" x-show="data.loading">
+      <div class="modal-wrapper">
+        <div class="modal-body">
+          <svg
+            width="38"
+            height="38"
+            viewBox="0 0 38 38"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient
+                x1="8.042%"
+                y1="0%"
+                x2="65.682%"
+                y2="23.865%"
+                id="a"
+              >
+                <stop stop-color="#fff" stop-opacity="0" offset="0%" />
+                <stop stop-color="#fff" stop-opacity=".631" offset="63.146%" />
+                <stop stop-color="#fff" offset="100%" />
+              </linearGradient>
+            </defs>
+            <g fill="none" fill-rule="evenodd">
+              <g transform="translate(1 1)">
+                <path
+                  d="M36 18c0-9.94-8.06-18-18-18"
+                  id="Oval-2"
+                  stroke="url(#a)"
+                  stroke-width="2"
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0 18 18"
+                    to="360 18 18"
+                    dur="0.9s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+                <circle fill="#fff" cx="36" cy="18" r="1">
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0 18 18"
+                    to="360 18 18"
+                    dur="0.9s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+              </g>
+            </g>
+          </svg>
+
+          <div class="clearfix" style="height: 40px"></div>
+
+          <span>Please wait...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal error" x-show="data.error">
+      <div class="modal-wrapper">
+        <div class="modal-body">
+          <span x-text="data.error_text"></span>
+        </div>
+      </div>
     </div>
 
     <div class="container">
@@ -18,82 +83,146 @@
       </a>
 
       <div class="control-box">
-        <label>Change View</label>
-
         <div class="switch-buttons">
-          <div class="switch-buttons__button js-switch-button" data-button="1">Button 1</div>
-          <div class="switch-buttons__button js-switch-button" data-button="2">Button 2</div>
-          <div class="switch-buttons__button js-switch-button" data-button="3">Button 3</div>
+          <div
+            class="switch-buttons__button js-switch-button"
+            data-button="1"
+            x-on:click="simulateButtonClick(1)"
+          >
+            Button 1
+          </div>
+          <div
+            class="switch-buttons__button js-switch-button"
+            data-button="2"
+            x-on:click="simulateButtonClick(2)"
+          >
+            Button 2
+          </div>
+          <div
+            class="switch-buttons__button js-switch-button"
+            data-button="3"
+            x-on:click="simulateButtonClick(3)"
+          >
+            Button 3
+          </div>
         </div>
       </div>
 
       <div class="control-box">
-        <label>Brightness</label>
-
-        <div class="brightness-switch">
-          <div class="brightness-switch__panel">Min</div>
-          <div class="brightness-switch__panel">
-            <input type="range" min="1" max="130" value="10" class="js-slider-brightness"/>
+        <span x-show="!parseInt(data.brightness_auto)">
+          <label>Brightness</label>
+          <div class="brightness-switch">
+            <div class="brightness-switch__panel">Min</div>
+            <div class="brightness-switch__panel">
+              <input
+                type="range"
+                min="1"
+                max="130"
+                value="10"
+                x-model="data.brightness"
+                x-on:change="customBrightness()"
+              />
+            </div>
+            <div class="brightness-switch__panel">Max</div>
           </div>
-          <div class="brightness-switch__panel">Max</div>
-        </div>
-      
-        <div class="clearfix"></div>
 
-        <small>
-          <span style="color: red; font-weight: 500">HIGH</span> 
-          value is not recommended. Display can be destroyed.
-        </small>
+          <div class="clearfix"></div>
+
+          <small>
+            <span style="color: red; font-weight: 500">HIGH</span>
+            value is not recommended. Display can be destroyed.
+          </small>
+
+          <div class="clearfix"></div>
+
+          <center>
+            <button
+              class="btn transparent xs"
+              x-on:click="data.brightness_auto = 1; save()"
+            >
+              Switch to automatic
+            </button>
+          </center>
+        </span>
+
+        <span x-show="parseInt(data.brightness_auto)">
+          <label>Auto Brightness</label>
+          <select x-model="data.brightness_auto" x-on:change="save()">
+            <option value="1">On</option>
+            <option value="0">Off</option>
+          </select>
+        </span>
       </div>
 
       <div class="control-box">
         <label>SHOW TEXT</label>
-        <input type="text" value="" placeholder="Type text here..." class="js-show-text-value"/>
+        <input
+          type="text"
+          placeholder="Type text here..."
+          x-model="data.show_text"
+        />
 
         <center>
-          <button class="btn primary js-show-text-show">Show</button>
-          <button class="btn danger js-show-text-clear">Clear</button>
-        </center>        
+          <button class="btn primary" x-on:click="showText()">Show</button>
+          <button class="btn danger" x-on:click="hideText()">Hide</button>
+        </center>
       </div>
 
       <div class="control-box">
-        <label>Settings</label>
+        <label>Watch</label>
 
-        <div class="subtitle">Watch Custom Color</div>
-        <input type="color" class="js-custom-color-watch">
+        <div class="subtitle">Custom Color</div>
+        <input
+          type="color"
+          x-model="data.custom_color_watch"
+          x-on:change="setWatchColor()"
+        />
+
+        <div class="subtitle">How often update time</div>
+        <select x-model="data.time_update_interval" x-on:change="save()">
+          <option value="1">Every 1 Hour</option>
+          <option value="8">Every 8 Hours</option>
+          <option value="24">Every 24 Hours ( 1 day )</option>
+          <option value="48">Every 48 Hours ( 2 days )</option>
+        </select>
 
         <div class="subtitle">Time offset</div>
-        <select class="js-time-offset">
+        <select x-model="data.time_offset" x-on:change="save()">
           <option value="1">+1 Hours</option>
           <option value="2">+2 Hours</option>
         </select>
 
-        <div class="subtitle">Auto Brightness</div>
-        <select class="js-brightness-auto">
-          <option value="1">On</option>
-          <option value="0">Off</option>
-        </select>
+        <center>
+          <button class="btn transparent xs" x-on:click="syncTime()">Manually Sync time</button>
+        </center>
+      </div>
+
+      <div class="control-box">
+        <label>Apps</label>
 
         <div class="subtitle">Auto switch time</div>
-        <select class="js-view-switch-main">
-            <option value="0">Never</option>        
-            <option value="60000">1min</option>        
-            <option value="180000">3min</option>        
-            <option value="300000">5min</option>        
-            <option value="600000">10min</option>        
-            <option value="1800000">30min</option>        
+        <select x-model="data.view_main_switch_time" x-on:change="save()">
+          <option value="0">Never</option>
+          <option value="60000">1min</option>
+          <option value="180000">3min</option>
+          <option value="300000">5min</option>
+          <option value="600000">10min</option>
+          <option value="1800000">30min</option>
         </select>
 
         <div class="subtitle">Auto switch time between apps</div>
-        <select class="js-view-switch-app">
-            <option value="10000">10s</option>        
-            <option value="30000">30s</option>        
-            <option value="60000">1min</option>        
-            <option value="300000">5min</option>              
+        <select x-model="data.view_app_switch_time" x-on:change="save()">
+          <option value="10000">10s</option>
+          <option value="30000">30s</option>
+          <option value="60000">1min</option>
+          <option value="300000">5min</option>
         </select>
+      </div>
 
+      <div class="control-box">
+        <label>Weather</label>
         <div class="subtitle">Weather Location</div>
-        <select class="js-weather-location">
+        <select x-model="data.weather_location" x-on:change="save()">
           <option value="3070628">Milovice</option>
           <option value="3067696">Prague</option>
         </select>
@@ -102,15 +231,30 @@
         <input
           type="text"
           placeholder="API key"
-          class="js-weather-api"
+          x-model="data.weather_key"
+          x-on:change="save()"
         />
       </div>
 
-      <center>
-          <button class="btn primary js-restart-device">Restart Watch</button>
-      </center>
+      <div class="control-box">
+        <label>Other</label>
+
+        <center>
+          <button class="btn primary" x-on:click="restartDevice()">
+            Restart Watch
+          </button>
+
+          <button class="btn primary" x-on:click="reloadPage()">
+            Reload page
+          </button>
+
+          <a href="/config.json" target="_blank" class="btn primary">
+            Export config
+          </a>
+        </center>
+      </div>
     </div>
-    
-    <script src="app.js"></script> 
+
+    <script src="app.js" async></script>
   </body>
 </html>
