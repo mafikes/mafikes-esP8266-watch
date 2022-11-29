@@ -4,7 +4,7 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoMatrix.h>
 
-typedef struct { char red; char green; char blue; } DisplayColor;
+typedef struct { int red; int green; int blue; } DisplayColor;
 typedef struct { int16_t x; int16_t y; } DisplayPosition;
 
 class Display {
