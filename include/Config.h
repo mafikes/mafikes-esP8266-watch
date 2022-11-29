@@ -14,7 +14,8 @@ struct ConfigFile {
     bool view_auto_switch;
     int view_main_switch_time;
     int view_app_switch_time;
-
+    int time_update_interval;
+    
     String ip_address;
     String weather_key;
     String weather_location;

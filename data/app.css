@@ -1,212 +1,217 @@
 * {
-  padding: 0;
-  margin: 0;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body.modal-active {
+    overflow-y: hidden;
 }
 
 body {
-  font-weight: 300;
-  font-size: 15px;
-  line-height: 1.4;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: #f0f0f0;
-  color: #000;
-  font-size: 16px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.4;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: #f0f0f0;
+    color: #000;
 }
 
 .clearfix {
-  clear: both;
-  width: 100%;
+    clear: both;
+    width: 100%;
 }
 
 .container {
-  width: 800px;
-  margin: 0 auto;
+    width: 800px;
+    margin: 0 auto;
 }
 
 @media all and (max-width: 800px) {
-  .container {
-    width: 100%;
-    margin: 0;
-    padding: 0 15px;
-  }
+    .container {
+        width: 100%;
+        margin: 0;
+        padding: 0 15px;
+    }
 }
 
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a .logo {
-  font-size: 32px;
-  text-transform: uppercase;
-  text-align: center;
-  margin: 40px 0;
-  color: #000;
-  text-decoration: none;
+    font-size: 32px;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 40px 0;
+    color: #000;
+    text-decoration: none;
 }
 a .logo span {
-  color: #d90045;
+    color: #d90045;
 }
 
 .control-box {
-  float: left;
-  width: 100%;
-  background: #fff;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  border-radius: 6px;
-  padding: 18px;
-  margin: 12px 0;
+    float: left;
+    width: 100%;
+    background: #fff;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    border-radius: 6px;
+    padding: 18px;
+    margin: 12px 0;
 }
 .control-box label {
-  float: left;
-  width: 100%;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 16px;
-  margin-bottom: 12px;
+    float: left;
+    width: 100%;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+    margin-bottom: 12px;
 }
 .control-box select {
-  /* for Firefox */
-  -moz-appearance: none;
-  /* for Chrome */
-  -webkit-appearance: none;
+    /* for Firefox */
+    -moz-appearance: none;
+    /* for Chrome */
+    -webkit-appearance: none;
 }
 .control-box input,
 .control-box select {
-  outline: none;
-  float: left;
-  width: 100%;
-  padding: 12px;
-  background: transparent;
-  border: 2px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
+    outline: none;
+    float: left;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
 }
 .control-box .subtitle {
-  float: left;
-  width: 100%;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 14px;
-  margin: 18px 0 12px 0;
+    float: left;
+    width: 100%;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    margin: 18px 0 12px 0;
 }
 .btn {
-  cursor: pointer;
-  color: #ffffff;
-  background: #000;
-  border: none;
-  padding: 14px 20px;
-  text-transform: uppercase;
-  border-radius: 6px;
-  font-size: 14px;
-  margin: 12px 0;
-  font-weight: bold;
+    cursor: pointer;
+    color: #ffffff;
+    background: #000;
+    border: none;
+    padding: 14px 20px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    font-size: 14px;
+    margin: 12px 0;
+    font-weight: bold;
 }
 .btn.transparent {
-  background: transparent;
-  color: #000;
-  border: 1px solid #CCC;
-  font-size: 12px;
+    background: transparent;
+    color: #000;
+    border: 1px solid #ccc;
+    font-size: 12px;
 }
 .btn.transparent:hover {
-  background: #CCC;
+    background: #ccc;
 }
 .btn.transparent:active {
-  background: #000;
-  color: #FFF;
+    background: #000;
+    color: #fff;
 }
 .btn.primary {
-  background: #000;
+    background: #000;
 }
 .btn.primary:active {
-  background: #484848;
+    background: #484848;
 }
 .btn.danger {
-  background: #c11515;
+    background: #c11515;
 }
 .btn.danger:active {
-  background: #8c0d0d;
+    background: #8c0d0d;
 }
 .btn.xs {
-  font-size: 12px;
-  padding: 8px 12px;
+    font-size: 12px;
+    padding: 8px 12px;
 }
 
 .btn:active {
-  transform: translateY(1px);
+    transform: translateY(1px);
 }
 
 .switch-buttons {
-  float: left;
-  width: 100%;
-  margin: 14px 0;
+    float: left;
+    width: 100%;
+    margin: 14px 0;
 }
 .switch-buttons__button {
-  float: left;
-  cursor: pointer;
-  width: 33%;
-  padding: 14px;
-  text-align: center;
-  background: #000;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  color: #fff;
-  border: 1px solid #424242;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 16px;
+    float: left;
+    cursor: pointer;
+    width: 33%;
+    padding: 14px;
+    text-align: center;
+    background: #000;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    color: #fff;
+    border: 1px solid #424242;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
 }
 .switch-buttons__button:active {
-  background: #484848;
+    background: #484848;
 }
 
 .brightness-switch {
-  margin: 16px 0;
+    margin: 16px 0;
 }
 .brightness-switch__panel:nth-child(1) {
-  float: left;
-  width: 10%;
-  padding: 10px 0;
-  text-align: center;
+    float: left;
+    width: 10%;
+    padding: 10px 0;
+    text-align: center;
 }
 .brightness-switch__panel:nth-child(2) {
-  float: left;
-  width: 80%;
+    float: left;
+    width: 80%;
 }
 .brightness-switch__panel:nth-child(3) {
-  float: left;
-  width: 10%;
-  padding: 10px 0;
-  text-align: center;
+    float: left;
+    width: 10%;
+    padding: 10px 0;
+    text-align: center;
 }
 
 .modal {
-  position: fixed;
-  background: #000000e6;
-  transition: all 0.3s linear;
-  width: 100%;
-  height: 100vh;
-  z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    transition: all 0.5s linear;
+    width: 100%;
+    height: 100vh;
+    z-index: 100;
 }
 .modal .modal-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 .modal .modal-body {
-  color: #fff;
-  text-align: center;
-  font-weight: bold;
-  width: 400px;
-  font-size: 20px;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    width: 400px;
+    font-size: 20px;
 }
 
-.modal.error { 
-  background: rgba(9, 28, 181, 0.92);
-  color: #FFF;
+.modal.error {
+    background: rgba(9, 28, 181, 0.92);
+    color: #fff;
 }

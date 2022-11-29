@@ -7,5 +7,8 @@
     "view_main_switch_time": 300000,
     "view_app_switch_time": 10000,
     "weather_key": "",
-    "weather_location": ""
+    "weather_location": "",
+    "watch_color_custom": false,
+    "watch_color": [255, 255, 255],
+    "time_offset": 1
 }

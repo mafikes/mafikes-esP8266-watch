@@ -178,7 +178,7 @@
           x-on:change="setWatchColor()"
         />
 
-        <div class="subtitle">How often update time</div>
+        <div class="subtitle">Time update via NTP</div>
         <select x-model="data.time_update_interval" x-on:change="save()">
           <option value="1">Every 1 Hour</option>
           <option value="8">Every 8 Hours</option>
@@ -224,6 +224,7 @@
         <div class="subtitle">Weather Location</div>
         <select x-model="data.weather_location" x-on:change="save()">
           <option value="3070628">Milovice</option>
+          <option value="3071304">Lysa Nad Labem</option>
           <option value="3067696">Prague</option>
         </select>
 

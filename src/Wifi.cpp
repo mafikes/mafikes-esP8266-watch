@@ -2,6 +2,7 @@
 #include <Display.h>
 #include <Config.h>
 #include <ApplicationManager.h>
+#include <ServiceNTP.h>
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -58,6 +59,11 @@ void Wifi::setup() {
     // Homepage
     server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
+    server.on("/sync-time", HTTP_GET, [](AsyncWebServerRequest *request){
+       ServiceNTP::getInstance().updateTime();
+       request->send(200, "text/plain", "OK"); 
+    });
+
     server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(200, "text/plain", String(ESP.getFreeHeap()));
     });
@@ -110,24 +116,28 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
-    server.on("/brightness-auto", HTTP_GET, [](AsyncWebServerRequest *request){
-        if(request->hasParam("value")) {
-            String value = request->getParam("value")->value();
-            bool status;
+    server.on("/save", HTTP_GET, [](AsyncWebServerRequest *request){
+        String brightness_auto = request->getParam("brightness_auto")->value();
+        // int time_offset = request->getParam("time_offset")->value().toInt();
+        // int view_main_switch_time = request->getParam("view_main_switch_time")->value().toInt();
+        // int view_app_switch_time = request->getParam("view_app_switch_time")->value().toInt();
+        // String weather_location = request->getParam("weather_location")->value();
+        // String weather_key = request->getParam("weather_key")->value();
+        // int time_update_interval = request->getParam("weather_key")->value().toInt();
+        Serial.println(brightness_auto);
 
-            if(value.toInt()) {
-                status = true;
-            } else {
-                status = false;
-            }
+        Config& config = Config::getInstance();
 
-            Config& config = Config::getInstance();
-            config.data.brightness_auto = status;  
-            config.save();
-            
-        }
-
-        request->send(200, "text/plain", "OK");
+        config.data.brightness_auto = (bool)brightness_auto.toInt();  
+        // config.data.time_offset = time_offset;  
+        // config.data.view_app_switch_time = view_app_switch_time;  
+        // config.data.view_main_switch_time = view_main_switch_time;  
+        // config.data.weather_location = weather_location;  
+        // config.data.weather_key = weather_key;  
+        // config.data.time_update_interval = time_update_interval;  
+        config.save();
+        
+        request->send(200);
     });
 
     server.on("/change-weather-location", HTTP_GET, [](AsyncWebServerRequest *request){

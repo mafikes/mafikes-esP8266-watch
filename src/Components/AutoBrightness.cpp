@@ -3,6 +3,7 @@
 #include <Display.h>
 
 #define LDR_PIN A0
+const int HIGH_MAX_LIGHT = 1024;
 
 void AutoBrightness::setup() 
 {
@@ -15,18 +16,10 @@ void AutoBrightness::loadBrightness()
     Display& display = Display::getInstance();
     int brightness = 0;
 
-    if(lightLevel < 40) {
-        brightness = 2;
-    } else if(lightLevel < 60) {
+    brightness = float((float(lightLevel) / float(1024))*float(100));
+    
+    if(lightLevel < 10) {
         brightness = 10;
-    } else if(lightLevel < 80) {
-        brightness = 20;
-    } else if(lightLevel < 120) {
-        brightness = 30;
-    } else if(lightLevel < 200) {
-        brightness = 40;
-    } else {
-        brightness = 60;
     }
 
     display.setBrightness(brightness);
@@ -40,7 +33,7 @@ void AutoBrightness::loop()
         lightLevel = analogRead(LDR_PIN);
 
         Serial.print("Auto Light Level: ");
-        Serial.println(lightLevel);
+        Serial.println(lightLevel);    
 
         loadBrightness();
 

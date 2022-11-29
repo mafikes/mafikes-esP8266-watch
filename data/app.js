@@ -11,6 +11,7 @@ const control = () => {
       time_offset: 0,
       show_text: "",
       custom_color_watch: null,
+      time_update_interval: 1,
       loading: false,
       loadingTimeout: null,
       error: false,
@@ -19,12 +20,16 @@ const control = () => {
     },
 
     createLoading: function () {
+      document.body.classList.add('modal-active');
+
       this.data.loading = true;
       clearTimeout(this.data.loadingTimeout);
     },
 
     clearLoading: function (timeout = 400) {
       let _this = this;
+      document.body.classList.remove('modal-active');
+
       this.data.loadingTimeout = setTimeout(function () {
         _this.data.loading = false;
       }, timeout);
@@ -53,7 +58,6 @@ const control = () => {
       clearTimeout(this.data.errorTimeout);
       this.data.errorTimeout = setTimeout(function () {
         _this.data.error = false;
-        console.log("aa");
       }, 2000);
     },
 
@@ -82,7 +86,6 @@ const control = () => {
     save: function () {
       let data = {
         brightness_auto: this.data.brightness_auto,
-        custom_color_watch: this.data.custom_color_watch,
         time_offset: this.data.time_offset,
         view_main_switch_time: this.data.view_main_switch_time,
         view_app_switch_time: this.data.view_app_switch_time,
@@ -91,20 +94,8 @@ const control = () => {
         time_update_interval: this.data.time_update_interval,
       };
 
-      const xhr = new XMLHttpRequest();
-      let _this = this;
-      this.createLoading();
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          const response = JSON.parse(xhr.responseText);
-          _this.clearLoading();
-        }
-      };
-
-      xhr.open("POST", "/save");
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.send(JSON.stringify(data));
+      let urlData = new URLSearchParams(data).toString();
+      this.sendRequest("save", `?${urlData}`);
     },
 
     loadData: function () {
@@ -156,24 +147,19 @@ const control = () => {
       xhr.send();
     },
 
-    rgbToHex: function (r, g, b) {
-      r = r.toString(16);
-      g = g.toString(16);
-      b = b.toString(16);
-
-      if (r.length == 1) r = "0" + r;
-      if (g.length == 1) g = "0" + g;
-      if (b.length == 1) b = "0" + b;
-
-      return "#" + r + g + b;
+    rgbToHex: (r, g, b) => {
+      "#" + ((r << 16) + (g << 8) + b).toString(16).padStart(6, "0");
     },
 
     restartDevice: function () {
       if (confirm("Are you sure with restart watch?")) {
         this.sendRequest("restart", null, () => {
+          
+          // Tick page
           setTimeout(function () {
             location.reload();
-          }, 12000);
+          }, 5000);
+
         });
       }
     },

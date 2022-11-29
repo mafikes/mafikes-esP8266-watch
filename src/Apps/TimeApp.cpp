@@ -1,6 +1,7 @@
 #include <TimeApp.h>
 #include <Config.h>
 #include <RTC.h>
+#include <ServiceNTP.h>
 
 String TimeApp::repairDigit(int digit) 
 {
@@ -48,17 +49,14 @@ void TimeApp::render(Display& display)
 
     if(Config::getInstance().data.watch_color_custom) {        
         DisplayColor watchCustomColor = {Config::getInstance().data.watch_color[0], Config::getInstance().data.watch_color[1], Config::getInstance().data.watch_color[2]};    
-        clockColor = watchCustomColor; 
-        
+        clockColor = watchCustomColor;         
     } else {
         clockColor = getColor();
     }    
 
-    // if(now.hour() == 165) { // LOW BATTERY ON RTC CHIP
-    //     display.drawText("LOW BTR!", false, {1, 0}, COLOR_RED);
-    //     display.show();
-    //     return;
-    // }
+    if(now.hour() == 165) { // BAD SYNC, LOW BATTERY, ETC.
+        // ServiceNTP::getInstance().updateTime();
+    }
 
     if(clockTheme == 1) {        
         display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()) + ":" + repairDigit(now.second()), false, {2, 0}, clockColor);

@@ -1,4 +1,4 @@
-#include <NTP.h>
+#include <ServiceNTP.h>
 #include <NTPClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -9,14 +9,16 @@ const long utcOffsetInSeconds = 0; // + 2 hours
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
-void NTP::updateTime() {
+void ServiceNTP::updateTime()
+{
     Serial.println("Time updated via NTP.");
 
+    // Time offset
     timeClient.setTimeOffset(3600 * Config::getInstance().data.time_offset);
     timeClient.update();
 
     time_t rawtime = timeClient.getEpochTime();
-    struct tm * ti;
+    struct tm *ti;
     ti = localtime(&rawtime);
 
     // Year
@@ -37,23 +39,29 @@ void NTP::updateTime() {
     Serial.print(month);
     Serial.print(".");
     Serial.println(year);
-    
+
     RTC::getInstance().setNewTime(DateTime(year, month, day, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds()));
 }
 
-void NTP::loop() {
-    // Update Time by set time    
+void ServiceNTP::loop()
+{
+    // Update Time by set time
     unsigned long currentMillis = millis();
-    if ((unsigned long)(currentMillis - prevTime) >= ((1000 * 60) * 60) || firstStart) { 
+    
+    // Update time every 48 hours    
+    if ((unsigned long)(currentMillis - prevTime) >= (((1000 * 60) * 60) * 48) || firstStart)
+    {
         updateTime();
-        prevTime = currentMillis;   
-        firstStart = false;     
+        prevTime = currentMillis;
+        firstStart = false;
     }
 }
 
-void NTP::setup() {
-    while ( WiFi.status() != WL_CONNECTED ) {
-        Serial.println("Wifi not connect, NTP cant be load.");
+void ServiceNTP::setup()
+{
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.println("Wifi not connected, NTP cant be load.");
     }
 
     timeClient.begin();
