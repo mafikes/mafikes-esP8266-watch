@@ -215,7 +215,11 @@ void Display::drawPixel(uint16_t  x, uint16_t  y, DisplayColor pixelColor) {
     matrix.drawPixel(x, y, color(pixelColor));
 }
 
-void Display::drawLine(uint16_t  x0, uint16_t  y0,uint16_t  X1,uint16_t  Y1, DisplayColor lineColor) {
+void Display::fillScreen(DisplayColor lineColor) {
+    matrix.fillScreen(color(lineColor));
+}
+
+void Display::drawLine(uint16_t  x0, uint16_t  y0, uint16_t  X1,uint16_t  Y1, DisplayColor lineColor) {
     matrix.drawLine(x0, y0, X1, Y1, color(lineColor));
     
 }
