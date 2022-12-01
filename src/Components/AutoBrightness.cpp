@@ -32,8 +32,8 @@ void AutoBrightness::loop()
     if ((unsigned long)(currentMillis - prevTime) >= 5000) { // Every 5 seconds
         lightLevel = analogRead(LDR_PIN);
 
-        Serial.print("Auto Light Level: ");
-        Serial.println(lightLevel);    
+        // Serial.print("Auto Light Level: ");
+        // Serial.println(lightLevel);    
 
         loadBrightness();
 
