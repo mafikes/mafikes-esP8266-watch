@@ -11,7 +11,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 void ServiceNTP::updateTime()
 {
-    Serial.println("Time updated via NTP.");
+    Serial.println("Time updated NTP.");
 
     // Time offset
     timeClient.setTimeOffset(3600 * Config::getInstance().data.time_offset);
@@ -33,7 +33,7 @@ void ServiceNTP::updateTime()
     uint8_t day = ti->tm_mday;
     String dayStr = day < 10 ? "0" + String(day) : String(day);
 
-    Serial.print("NTP Date: ");
+    Serial.print("NTP Date:");
     Serial.print(day);
     Serial.print(".");
     Serial.print(month);
@@ -49,7 +49,7 @@ void ServiceNTP::loop()
     unsigned long currentMillis = millis();
     
     // Update time every 48 hours    
-    if ((unsigned long)(currentMillis - prevTime) >= (((1000 * 60) * 60) * 48) || firstStart)
+    if ( firstStart || ((unsigned long)(currentMillis - prevTime) >= (((1000 * 60) * 60) * Config::getInstance().data.time_update_interval)) )
     {
         updateTime();
         prevTime = currentMillis;
