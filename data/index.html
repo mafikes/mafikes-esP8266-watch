@@ -109,7 +109,7 @@
       </div>
 
       <div class="control-box">
-        <span x-show="!parseInt(data.brightness_auto)">
+        <span x-show="!data.brightness_auto">
           <label>Brightness</label>
           <div class="brightness-switch">
             <div class="brightness-switch__panel">Min</div>
@@ -138,19 +138,22 @@
           <center>
             <button
               class="btn transparent xs"
-              x-on:click="data.brightness_auto = 1; save()"
+              x-on:click="data.brightness_auto = true; save()"
             >
               Switch to automatic
             </button>
           </center>
         </span>
 
-        <span x-show="parseInt(data.brightness_auto)">
+        <span x-show="data.brightness_auto">
           <label>Auto Brightness</label>
-          <select x-model="data.brightness_auto" x-on:change="save()">
-            <option value="1">On</option>
-            <option value="0">Off</option>
-          </select>
+          <center>
+            <button
+              class="btn transparent xs"
+              x-on:click="data.brightness_auto = false; save()"
+            >
+              Switch to manual adjustment
+            </button>         
         </span>
       </div>
 

@@ -2,7 +2,7 @@ const control = () => {
   return {
     data: {
       brightness: 10,
-      brightness_auto: 1,
+      brightness_auto: true,
       view_main_switch_time: 0,
       view_app_switch_time: 0,
       time_update: 1,
@@ -86,6 +86,7 @@ const control = () => {
     save: function () {
       let data = {
         brightness_auto: this.data.brightness_auto,
+        brightness: this.data.brightness,
         time_offset: this.data.time_offset,
         view_main_switch_time: this.data.view_main_switch_time,
         view_app_switch_time: this.data.view_app_switch_time,
@@ -107,15 +108,16 @@ const control = () => {
         console.log("CONFIG:", data);
 
         _this.data.brightness = data.brightness;
-        _this.data.brightnessAuto = data.brightness_auto == true ? 1 : 0;
+        _this.data.brightness_auto = data.brightness_auto;
 
         _this.data.view_main_switch_time = data.view_main_switch_time;
-        _this.data.switchAppTime = data.view_app_switch_time;
+        _this.data.view_app_switch_time = data.view_app_switch_time;
 
         _this.data.weather_location = data.weather_location;
         _this.data.weather_key = data.weather_key;
 
         _this.data.time_offset = data.time_offset;
+        _this.data.time_update_interval = data.time_update_interval;
 
         _this.data.custom_color_watch = _this.rgbToHex(
           data.watch_color[0],
