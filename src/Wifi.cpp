@@ -117,74 +117,37 @@ void Wifi::setup() {
     });
 
     server.on("/save", HTTP_GET, [](AsyncWebServerRequest *request){
-        String brightness_auto = request->getParam("brightness_auto")->value();
-        // int time_offset = request->getParam("time_offset")->value().toInt();
-        // int view_main_switch_time = request->getParam("view_main_switch_time")->value().toInt();
-        // int view_app_switch_time = request->getParam("view_app_switch_time")->value().toInt();
-        // String weather_location = request->getParam("weather_location")->value();
-        // String weather_key = request->getParam("weather_key")->value();
-        // int time_update_interval = request->getParam("weather_key")->value().toInt();
-        Serial.println(brightness_auto);
-
+        String string_brightness_auto = request->getParam("brightness_auto")->value();
+        int brightness = request->getParam("brightness")->value().toInt();
+        int time_offset = request->getParam("time_offset")->value().toInt();
+        int view_main_switch_time = request->getParam("view_main_switch_time")->value().toInt();
+        int view_app_switch_time = request->getParam("view_app_switch_time")->value().toInt();
+        String weather_location = request->getParam("weather_location")->value();
+        String weather_key = request->getParam("weather_key")->value();
+        int time_update_interval = request->getParam("time_update_interval")->value().toInt();
+        
         Config& config = Config::getInstance();
 
-        config.data.brightness_auto = (bool)brightness_auto.toInt();  
-        // config.data.time_offset = time_offset;  
-        // config.data.view_app_switch_time = view_app_switch_time;  
-        // config.data.view_main_switch_time = view_main_switch_time;  
-        // config.data.weather_location = weather_location;  
-        // config.data.weather_key = weather_key;  
-        // config.data.time_update_interval = time_update_interval;  
+        bool brightness_auto = false;
+        if(string_brightness_auto == "true") {
+            brightness_auto = true;
+        }
+
+        if(!brightness_auto) {
+            ApplicationManager::getInstance().setBrightness(brightness);
+        }
+
+        config.data.brightness_auto = brightness_auto;  
+        config.data.brightness = brightness;  
+        config.data.time_offset = time_offset;  
+        config.data.view_app_switch_time = view_app_switch_time;  
+        config.data.view_main_switch_time = view_main_switch_time;  
+        config.data.weather_location = weather_location;  
+        config.data.weather_key = weather_key;  
+        config.data.time_update_interval = time_update_interval;  
         config.save();
         
         request->send(200);
-    });
-
-    server.on("/change-weather-location", HTTP_GET, [](AsyncWebServerRequest *request){
-        if(request->hasParam("value")) {
-            String value = request->getParam("value")->value();
-            
-            Config& config = Config::getInstance();
-            config.data.weather_location = value;  
-            config.save();            
-        }
-
-        request->send(200, "text/plain", "OK");
-    });
-
-    server.on("/change-weather-api", HTTP_GET, [](AsyncWebServerRequest *request){
-        if(request->hasParam("value")) {
-            String value = request->getParam("value")->value();
-            
-            Config& config = Config::getInstance();
-            config.data.weather_key = value;  
-            config.save();
-        }
-
-        request->send(200, "text/plain", "OK");
-    });
-
-    server.on("/switch-main-time", HTTP_GET, [](AsyncWebServerRequest *request){
-        if(request->hasParam("value")) {
-            String value = request->getParam("value")->value();
-            
-            int time = value.toInt();
-
-            Config& config = Config::getInstance();
-            
-            if(time > 0) {
-                config.data.view_auto_switch = true;
-                config.data.view_main_switch_time = time;
-            } else {
-                config.data.view_auto_switch = false;
-            }
-
-            config.save();
-
-            ApplicationManager::getInstance().loadSwichTime();
-        }
-
-        request->send(200, "text/plain", "OK");
     });
 
     server.on("/switch-app-time", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -220,23 +183,9 @@ void Wifi::setup() {
         request->send(200, "text/plain", "OK");
     });
 
-    server.on("/time-offset", HTTP_GET, [](AsyncWebServerRequest *request){
-        if(request->hasParam("value")) {
-            String value = request->getParam("value")->value();
-            
-            int time = value.toInt();
-
-            Config& config = Config::getInstance();    
-            config.data.time_offset = time;        
-            config.save();
-        }
-
-        request->send(200, "text/plain", "OK");
-    });
-
     server.on("/restart", HTTP_GET, [](AsyncWebServerRequest *request) {
-        ESP.reset();
         request->send(200, "text/plain", "OK");
+        ESP.reset();
     });
 
     server.begin();
