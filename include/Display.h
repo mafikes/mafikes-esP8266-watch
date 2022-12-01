@@ -47,6 +47,7 @@ class Display {
         void printText(String, DisplayPosition, DisplayColor);
         void getColor(DisplayColor);
         void drawPixel(uint16_t, uint16_t, DisplayColor);
+        void fillScreen(DisplayColor);
         void drawLine(uint16_t ,uint16_t ,uint16_t ,uint16_t , DisplayColor);
 };
 
