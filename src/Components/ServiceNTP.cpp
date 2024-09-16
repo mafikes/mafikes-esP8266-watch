@@ -7,49 +7,55 @@
 
 const long utcOffsetInSeconds = 0; // + 2 hours
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+NTPClient timeClient(ntpUDP, "tik.cesnet.cz", utcOffsetInSeconds, 0);
 
 void ServiceNTP::updateTime()
 {
-    Serial.println("Time updated NTP.");
+    timeClient.setUpdateInterval(0);
 
-    // Time offset
-    timeClient.setTimeOffset(3600 * Config::getInstance().data.time_offset);
-    timeClient.update();
+    if (timeClient.forceUpdate())
+    {
+        Serial.println("Time updated NTP.");
+        time_t rawtime = timeClient.getEpochTime();
+        struct tm *ti;
+        ti = localtime(&rawtime);
 
-    time_t rawtime = timeClient.getEpochTime();
-    struct tm *ti;
-    ti = localtime(&rawtime);
+        // Year
+        uint16_t year = ti->tm_year + 1900;
+        String yearStr = String(year);
 
-    // Year
-    uint16_t year = ti->tm_year + 1900;
-    String yearStr = String(year);
+        // Month
+        uint8_t month = ti->tm_mon + 1;
+        String monthStr = month < 10 ? "0" + String(month) : String(month);
 
-    // Month
-    uint8_t month = ti->tm_mon + 1;
-    String monthStr = month < 10 ? "0" + String(month) : String(month);
+        // Day
+        uint8_t day = ti->tm_mday;
+        String dayStr = day < 10 ? "0" + String(day) : String(day);
 
-    // Day
-    uint8_t day = ti->tm_mday;
-    String dayStr = day < 10 ? "0" + String(day) : String(day);
+        Serial.print("NTP Date:");
+        Serial.print(day);
+        Serial.print(".");
+        Serial.print(month);
+        Serial.print(".");
+        Serial.println(year);
 
-    Serial.print("NTP Date:");
-    Serial.print(day);
-    Serial.print(".");
-    Serial.print(month);
-    Serial.print(".");
-    Serial.println(year);
-
-    RTC::getInstance().setNewTime(DateTime(year, month, day, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds()));
+        RTC::getInstance().setNewTime(DateTime(year, month, day, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds()));
+    }
+    else
+    {
+        Serial.println("Failed to update time via NTP.");
+    }
 }
 
 void ServiceNTP::loop()
 {
     // Update Time by set time
     unsigned long currentMillis = millis();
-    
-    // Update time every 48 hours    
-    if ( firstStart || ((unsigned long)(currentMillis - prevTime) >= (((1000 * 60) * 60) * Config::getInstance().data.time_update_interval)) )
+
+    // Update time every 48 hours
+    if (
+        firstStart ||
+        ((unsigned long)(currentMillis - prevTime) >= (((1000 * 60) * 60) * Config::getInstance().data.time_update_interval)))
     {
         updateTime();
         prevTime = currentMillis;
@@ -65,4 +71,6 @@ void ServiceNTP::setup()
     }
 
     timeClient.begin();
+
+    timeClient.setTimeOffset(3600 * Config::getInstance().data.time_offset);
 }

@@ -1,5 +1,5 @@
 #include <Display.h>
-#include <Fonts/TomThumb.h>
+#include <AwtrixFont.h>
 #include <Fonts/Picopixel.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
@@ -12,6 +12,8 @@
 #define MATRIX_PIN 2
 #define MATRIX_WIDTH 32
 #define MATRIX_HEIGHT 8
+#define NUMPIXELS MATRIX_WIDTH*MATRIX_HEIGHT
+
 // #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_RIGHT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE
 #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG
 // #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG
@@ -55,7 +57,7 @@ void Display::drawText(String text, bool defaultFont, DisplayPosition pos, Displ
         matrix.setFont();
         matrix.setCursor(pos.x, pos.y);
     }else{
-        matrix.setFont(&TomThumb);
+        matrix.setFont(&AwtrixFont);
         matrix.setCursor(pos.x, pos.y+6);
     }
 
@@ -155,7 +157,7 @@ void Display::showLoading(int delayTime)
 
 void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor colorText) 
 {
-    matrix.setFont(&TomThumb);
+    matrix.setFont(&AwtrixFont);
     matrix.setCursor(pos.x+8, pos.y+6);
     matrix.setTextColor(color(colorText));
     
@@ -171,7 +173,7 @@ void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize
         lastShowedIcon = 0;
     }
 
-    matrix.setFont(&TomThumb);
+    matrix.setFont(&AwtrixFont);
     matrix.setCursor(textPosition.x+8, textPosition.y+6);
     matrix.setTextColor(color(textColor));
     matrix.print(text);
@@ -188,7 +190,7 @@ void Display::showLogo() {
     matrix.clear();
     matrix.setBrightness(40);
 
-    matrix.setFont(&TomThumb);
+    matrix.setFont(&AwtrixFont);
     matrix.setTextColor(color(COLOR_WHITE));
     matrix.setCursor(2, 6);
     matrix.print("M");
@@ -210,6 +212,7 @@ void Display::showLogo() {
 
     matrix.show();
 }
+
 
 void Display::drawPixel(uint16_t  x, uint16_t  y, DisplayColor pixelColor) {
     matrix.drawPixel(x, y, color(pixelColor));

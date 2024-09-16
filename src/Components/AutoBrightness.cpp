@@ -18,8 +18,8 @@ void AutoBrightness::loadBrightness()
 
     brightness = float((float(lightLevel) / float(1024))*float(100));
     
-    if(lightLevel < 10) {
-        brightness = 10;
+    if(brightness < 5) {
+        brightness = 5;
     }
 
     display.setBrightness(brightness);
@@ -29,7 +29,7 @@ void AutoBrightness::loop()
 {
     unsigned long currentMillis = millis();
     
-    if ((unsigned long)(currentMillis - prevTime) >= 5000) { // Every 5 seconds
+    if ((unsigned long)(currentMillis - prevTime) >= 10000) { // Every 10 seconds
         lightLevel = analogRead(LDR_PIN);
 
         // Serial.print("Auto Light Level: ");

@@ -87,20 +87,15 @@ void TimeApp::render(Display& display)
 
         // Print Day of Week under clock
         int offset = 0;
-        for(int day = 1; day <= 7; day++) {
-            if(day == now.dayOfTheWeek()) {
-                DisplayColor colorLine = clockColor;
-
-                if(colorLine.red == COLOR_GRAY.red && colorLine.blue == COLOR_GRAY.blue && colorLine.green == COLOR_GRAY.green) {
-                    colorLine = COLOR_WHITE;
-                }
-
-                display.drawLine(2 + offset, 7, 4 + offset, 7, colorLine);
-            } else {
-                display.drawLine(2 + offset, 7, 4 + offset, 7, COLOR_GRAY);
-            }  
+        for(int day = 0; day <= 6; day++) {
+            display.drawLine(2 + offset, 7, 4 + offset, 7, COLOR_WHITE);
             offset += 4;      
         }
+
+        // Draw active day of week
+        // now.dayOfTheWeek() Day of week as an integer from 0 (Sunday) to 6 (Saturday).    
+        int activeOffset = now.dayOfTheWeek() == 0 ?  (6 * 4) : 4 - (now.dayOfTheWeek() * 4);
+        display.drawLine(2 + activeOffset, 7, 4 +activeOffset, 7, clockColor);
     } else {
         DisplayColor headerColor = clockColor;
 
@@ -122,22 +117,17 @@ void TimeApp::render(Display& display)
 
         display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {13, 0}, clockColor);
 
-        // Print Day of Week under clock
+        // Print Days of Week under clock
         int offset = 9;
-        for(int day = 1; day <= 7; day++) {
-            if(day == now.dayOfTheWeek()) {
-                DisplayColor colorLine = clockColor;
-
-                if(colorLine.red == COLOR_GRAY.red && colorLine.blue == COLOR_GRAY.blue && colorLine.green == COLOR_GRAY.green) {
-                    colorLine = COLOR_WHITE;
-                }
-
-                display.drawLine(2 + offset, 7, 3 + offset, 7, colorLine);
-            } else {
-                display.drawLine(2 + offset, 7, 3 + offset, 7, COLOR_GRAY);
-            }  
+        for(int day = 0; day <= 6; day++) {
+            display.drawLine(2 + offset, 7, 3 + offset, 7, COLOR_WHITE);
             offset += 3;      
         }
+
+        // Draw active day of week
+        // now.dayOfTheWeek() Day of week as an integer from 0 (Sunday) to 6 (Saturday).    
+        int activeOffset = now.dayOfTheWeek() == 0 ? 9 + (6 * 3) : 6 + (now.dayOfTheWeek() * 3);
+        display.drawLine(2 + activeOffset, 7, 3 + activeOffset, 7, headerColor);
 
         clockTheme = 0;
     }

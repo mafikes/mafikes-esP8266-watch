@@ -19,16 +19,18 @@ RTC &rtc = RTC::getInstance();
 
 void setup()
 {
-    // delay(2000);
-    Serial.begin(512000); // Serial Port WS d1 mini
+    ESP.wdtDisable();
+    ESP.wdtEnable(WDTO_8S);
+
+    Serial.begin(115200); // Serial Port WS d1 mini
+
+    display.showLogo();
+
     config.setup();
 
-    display.setBrightness(100);
-    display.showLogo(); // show on dispaly logo intro
-    
     display.setBrightness(config.data.brightness);
     autoBrightness.setup();
-    display.showLogo(); // show on dispaly logo intro
+    display.showLogo();
 
     wifi.setup();               // Init Wifi
     rtc.setup();                // Init RTC

@@ -21,9 +21,11 @@ void WeatherApp::askServer()
     WiFiClient client;
     HTTPClient http;
 
-    String url = ("http://api.openweathermap.org/data/2.5/weather?id=") + String(config.data.weather_location) +("&appid=")+ String(config.data.weather_key) + ("&units=metric");
+    char url[150];
+    snprintf(url, sizeof(url), "http://api.openweathermap.org/data/2.5/weather?id=%s&appid=%s&units=metric", 
+             config.data.weather_location, config.data.weather_key);
 
-    http.begin(client, url.c_str());
+    http.begin(client, url);
     int httpCode = http.GET();
 
     if (httpCode > 0) {

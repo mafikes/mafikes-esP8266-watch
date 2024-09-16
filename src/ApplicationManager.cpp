@@ -19,26 +19,32 @@
 void ApplicationManager::autoTimerAppSwitch() 
 {    
     unsigned long currentMillis = millis();
+
+    Serial.println((unsigned long)(currentMillis - prevAppSwitchMillis));
+
     if ((unsigned long)(currentMillis - prevAppSwitchMillis) >= intervalSwitchApp) {
         ApplicationManager::getInstance().nextApp(false);
 
-        Serial.println("Switch view");
+        Serial.println("Fired: switch app view");
+        Serial.println(storedAppView);
+        Serial.println(activeAppView);
 
         if(storedAppView == activeAppView) {            
             resumeAutoSwitch();
+        } else {
+            prevAppSwitchMillis = currentMillis;
         }
-
-        prevAppSwitchMillis = currentMillis;
     }
 }
 
 void ApplicationManager::autoSwitchMainTimer() 
 {
     unsigned long currentMillis = millis();
+
     if ((unsigned long)(currentMillis - prevMainSwitchMillis) >= intervalMainSwitchApp) {
         storedAppView = activeAppView;
 
-        Serial.println("Start auto switch view");
+        Serial.println("Fired: auto main timer switch view.");
 
         autoSwitchRun = true;
 
@@ -49,11 +55,14 @@ void ApplicationManager::autoSwitchMainTimer()
 
 void ApplicationManager::resumeAutoSwitch() 
 {
+    Serial.println("Fired: resume auto switch.");
+
     unsigned long currentMillis = millis();
 
     autoSwitchRun = false;
     canSwitchApp = true;
-    prevMainSwitchMillis = currentMillis;
+
+    prevMainSwitchMillis = currentMillis;    
 }
 
 void ApplicationManager::setBrightness(int value)
@@ -96,7 +105,6 @@ void ApplicationManager::loadSwichTime()
     intervalMainSwitchApp = config.data.view_main_switch_time;  
     intervalSwitchApp = config.data.view_app_switch_time; 
 
- 
     resumeAutoSwitch();
 }
 
@@ -164,9 +172,7 @@ void ApplicationManager::nextApp(bool fromButton)
     }
 
     if(config.data.view_auto_switch && fromButton) {
-        changeSwitchViewAuto(false);
-    } else if(config.data.view_auto_switch && !fromButton) {
-        changeSwitchViewAuto(true);
+        resumeAutoSwitch();        
     }
     
     application->beforeRender();
@@ -175,8 +181,13 @@ void ApplicationManager::nextApp(bool fromButton)
 void ApplicationManager::loop()
 {
     if(allowedSwitchApp) {
-        if(canSwitchApp && !autoSwitchRun) autoSwitchMainTimer();
-        if(canSwitchApp && autoSwitchRun) autoTimerAppSwitch();
+        if(canSwitchApp && !autoSwitchRun) {
+            autoSwitchMainTimer();
+        }
+        
+        if(canSwitchApp && autoSwitchRun) {
+            autoTimerAppSwitch();
+        }
     }
 
     int btn1State = digitalRead(BTN1_PIN);
