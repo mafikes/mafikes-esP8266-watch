@@ -64,6 +64,14 @@ void Display::drawText(String text, bool defaultFont, DisplayPosition pos, Displ
     canvas.print(text);     
 }
 
+void Display::drawChar(char character, DisplayPosition pos, DisplayColor colorText)
+{
+    canvas.setFont(&AwtrixFont);
+    canvas.setCursor(pos.x, pos.y+6);
+    canvas.setTextColor(color(colorText));
+    canvas.write(character);
+}
+
 void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int16_t w, int16_t h) 
 {
     uint16_t RGB_bmp_fixed[w * h];
@@ -284,6 +292,21 @@ void Display::showLogo() {
     show();
 }
 
+
+void Display::showUpdateProgress(int percent)
+{
+    clear();
+    drawText("UPDATE", false, {4, 0}, COLOR_WHITE);
+
+    drawLine(0, 7, MATRIX_WIDTH - 1, 7, {40, 40, 40});
+
+    int width = percent * MATRIX_WIDTH / 100;
+    if(width > 0) {
+        drawLine(0, 7, width - 1, 7, COLOR_GREEN);
+    }
+
+    show();
+}
 
 void Display::drawPixel(uint16_t  x, uint16_t  y, DisplayColor pixelColor) {
     canvas.drawPixel(x, y, color(pixelColor));

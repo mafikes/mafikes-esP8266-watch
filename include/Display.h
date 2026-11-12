@@ -50,6 +50,7 @@ class Display {
         void clear();
         void setBrightness(int);
         void drawText(String, bool, DisplayPosition, DisplayColor = {255, 255, 255});
+        void drawChar(char, DisplayPosition, DisplayColor);
         void fixdrawRGBBitmap(int16_t, int16_t, const uint32_t*, int16_t, int16_t);
         void resetLoading();
         void showLoading(int = 300);
@@ -57,6 +58,7 @@ class Display {
         void showIcon(const uint32_t[][64]);
         void drawTextWithIcon(String, DisplayPosition, DisplayColor = {255, 255, 255});
         void showLogo();
+        void showUpdateProgress(int);
         void show();
         void resetIconAnimation();
         void drawPixel(uint16_t, uint16_t, DisplayColor);

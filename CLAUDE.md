@@ -12,7 +12,12 @@ The PlatformIO CLI is not on PATH, use the full path:
 ~/.platformio/penv/bin/pio run -t upload          # upload firmware (USB, /dev/cu.usbserial-110)
 ~/.platformio/penv/bin/pio run -t uploadfs        # upload data/ to LittleFS (web UI + config)
 ~/.platformio/penv/bin/pio device monitor         # Serial 115200
+~/.platformio/penv/bin/pio run -t buildfs         # build .pio/build/d1_mini/littlefs.bin for OTA
 ```
+
+**OTA over WiFi:** open `http://mafikeswatch.local/update` (also linked from the web UI) and upload
+`.pio/build/d1_mini/firmware.bin` (type Firmware) or `.pio/build/d1_mini/littlefs.bin` (type Web UI / filesystem).
+A filesystem update keeps the current settings (config in RAM is written back before restart), unlike `uploadfs` over USB.
 
 `data/config.json` is in `.gitignore` (contains the weather API key), the template is `data/config.example.json`. Without a config everything loads as zeros.
 `uploadfs` overwrites the config on the device, including settings saved from the web UI.
@@ -40,7 +45,7 @@ Power: 256 LEDs at high brightness draw several amps. A brownout is a possible r
   - Buttons are sampled every 30 ms (`BUTTON_READ_TIME`), which acts as debounce.
   - Apps are switched **only** via `setApplication(app, transition)`, which deletes the old app and starts the slide transition.
 - **Apps** (`src/Apps/`, derive from `include/ApplicationView.h`): `beforeRender()`, `render(Display&)`, `clear()`, `btn1_process()`, `btn3_process()`.
-  - `TimeApp`: 5 clock themes (button 3) and colors (button 1), saved to config.
+  - `TimeApp`: 5 clock themes (button 3) and colors (button 1), saved to config. Hours and minutes use a rolling digit animation (`drawTime`): each changed digit (including seconds in theme 1) slides up and the new one comes from the bottom (`DIGIT_ANIMATION_TIME` 350 ms, ease-out). Digits are positioned using AwtrixFont advances (digit 4 px, colon 2 px).
   - `WeatherApp`: OpenWeatherMap API, retry at most every 30 s, 3 s HTTP timeout.
   - `TemperatureApp(view)`: 0 temperature, 1 heat index, 2 humidity. DHT is read every 2 s.
   - `BrightnessApp`, `ShowTextApp` (scrolling text).
@@ -50,6 +55,7 @@ Power: 256 LEDs at high brightness draw several amps. A brownout is a possible r
   - Slide transition: `startTransition(TRANSITION_SLIDE_UP/DOWN)` stores the last frame, then `show()` slides the old frame out and the new one in over `TRANSITION_TIME` (350 ms, ease-out). Next app = up, back to clock = down.
   - Icon animation (`showAnimateIcon`) and loading animation (`showLoading`) are timed with `millis()`.
   - Icons live in `include/Icons.h` (8×8 frame arrays), font is `src/AwtrixFont.h`.
+- **OTA** (`src/Components/OTA.cpp`): custom `/update` page and upload handler on the existing AsyncWebServer using the core `Update` class (`Update.runAsync(true)`, because it runs in a web callback). ElegantOTA was not used because its async mode needs ESPAsyncWebServer ≥ 3.12 (ESP32Async fork), which conflicts with the me-no-dev version required by ESPAsyncWiFiManager. While an update runs, `main.cpp` skips apps and NTP and shows `Display::showUpdateProgress()` (text UPDATE + progress bar on row 7). Upload aborts after 15 s without data; restart 1 s after success. Flash layout is 4m1m (1 MB LittleFS), plenty of space for OTA.
 - **Wifi** (`src/Wifi.cpp`): ESPAsyncWiFiManager (AP `MAFIKESWATCH` on first boot), mDNS `mafikeswatch.local`, AsyncWebServer serving the web UI from LittleFS.
 - **Config** (`src/Config.cpp`): `/config.json` in LittleFS, ArduinoJson 6, `StaticJsonDocument<1024>`. The capacity must also cover copied key names; check it when adding keys, otherwise the config stops loading.
 - **Temperature**: the DHT11 sits in an enclosure heated by the electronics, hence `temperature_offset` (°C, set from the web UI, default 0). The user sets −2 based on a reference thermometer. Displayed rounded to whole degrees (`getStringRounded(..., 5, 0)`); decimals were deliberately not added because DHT11 only has 1 °C resolution and ±2 °C accuracy.
@@ -58,7 +64,7 @@ Power: 256 LEDs at high brightness draw several amps. A brownout is a possible r
 
 ### Web API (all GET)
 
-`/change-view?button=1|2|3`, `/brightness?value=`, `/show-text?value=`, `/show-main-app`, `/save?...` (all settings), `/switch-app-time?value=`, `/custom-color-watch?red=&green=&blue=`, `/sync-time`, `/restart`, `/info` (free heap), `/config.json` (static file).
+`/change-view?button=1|2|3`, `/brightness?value=`, `/show-text?value=`, `/show-main-app`, `/save?...` (all settings), `/switch-app-time?value=`, `/custom-color-watch?red=&green=&blue=`, `/sync-time`, `/restart`, `/info` (free heap), `/config.json` (static file), `/update` (GET page, POST upload `?type=firmware|filesystem`).
 
 ## ⚠️ Important rules (causes of past crashes)
 
@@ -83,7 +89,10 @@ Fixed:
 - **Slide transitions** between apps (canvas + frame composition), removed all `delay()` from rendering, LEDs pushed only on change, button debounce, DHT read every 2 s, removed Serial spam.
 - **Temperature correction** `temperature_offset` (config, web UI, `TemperatureApp::readData`), config capacity raised to 1024.
 
-Status: compiles, **not yet tested on hardware**. Verify icon animation speed, transition smoothness and double button presses.
+- **Rolling digits** in `TimeApp` when hours/minutes/seconds change, `Display::drawChar()` helper.
+- **OTA updates** at `/update` (firmware and filesystem), progress shown on the matrix.
+
+Status: slide transitions and stability fixes tested on hardware, look good. Rolling digits and OTA compile, not yet tested on hardware.
 
 ## Known bugs (not fixed yet)
 
@@ -95,10 +104,11 @@ Status: compiles, **not yet tested on hardware**. Verify icon animation speed, t
 - Config parse failure → all zeros (`view_app_switch_time = 0` switches constantly). No defaults.
 - `time_offset` from `/save` reaches the NTP client only after a restart.
 - `config.json` (with the API key) is publicly readable on the LAN.
+- The whole web UI including `/update` has no authentication: anyone on the home network can change settings or upload firmware.
 
 ## Ideas for further work
 
-- **OTA** (ArduinoOTA via `upload_protocol = espota`, or ElegantOTA at `/update`); there is enough flash. Recommended: ArduinoOTA with a password, first flash via USB.
+- Authentication for the web UI and `/update`; optionally ArduinoOTA (`upload_protocol = espota`) for uploading straight from PlatformIO.
 - Diagnostics: `ESP.getResetReason()`, `getHeapFragmentation()`, `getMaxFreeBlockSize()` in `/info`; `monitor_filters = esp8266_exception_decoder`.
 - Time zones with DST: `configTime("CET-1CEST,M3.5.0,M10.5.0/3", ...)` instead of the custom NTPClient. The `Timezone` library in `lib_deps` is unused.
 - Better temperature sensor: SHT40/SHT31 or BME280 on the existing I2C bus (shared with the RTC), mounted outside the enclosure.
