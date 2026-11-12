@@ -5,7 +5,6 @@
 #include <WString.h>
 
 #define MATRIX_WIDTH 32;
-unsigned long previousAnimation = 0;
 
 ShowTextApp::ShowTextApp(String _showText, bool useDefaultFont, int speed, DisplayColor color)
 {
@@ -38,7 +37,9 @@ void ShowTextApp::render(Display& display)
     display.drawText(showText, defaultFont, {position, 0}, textColor);    
     display.show();
 
-    position--;
-
-    delay(animationSpeed);
+    unsigned long currentMillis = millis();
+    if(currentMillis - lastStepTime >= animationSpeed) {
+        lastStepTime = currentMillis;
+        position--;
+    }
 }

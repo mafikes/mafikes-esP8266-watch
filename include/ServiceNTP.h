@@ -9,6 +9,7 @@ class ServiceNTP {
 
         unsigned long prevTime = 0;
         bool firstStart = true;        
+        bool pendingUpdate = false;
     public:
         static ServiceNTP& getInstance()
         {
@@ -18,6 +19,7 @@ class ServiceNTP {
         
         void setup();
         void updateTime();
+        void requestUpdate();
         void loop();
 };
 

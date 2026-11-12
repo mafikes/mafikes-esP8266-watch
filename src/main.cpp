@@ -41,6 +41,7 @@ void setup()
 void loop()
 {
     wifi.loop();
+    config.loop();
     ntp.loop();
 
     if (config.data.brightness_auto)

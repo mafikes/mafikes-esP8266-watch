@@ -241,6 +241,20 @@
       </div>
 
       <div class="control-box">
+        <label>Temperature</label>
+
+        <div class="subtitle">Temperature correction (°C)</div>
+        <input
+          type="number"
+          step="0.5"
+          min="-10"
+          max="10"
+          x-model="data.temperature_offset"
+          x-on:change="save()"
+        />
+      </div>
+
+      <div class="control-box">
         <label>Other</label>
 
         <center>

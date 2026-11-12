@@ -16,11 +16,12 @@
 #define BTN2_PIN 12
 #define BTN3_PIN 15
 
+#define FRAME_TIME 20 // ms, max 50 FPS
+#define BUTTON_READ_TIME 30 // ms, debounce
+
 void ApplicationManager::autoTimerAppSwitch() 
 {    
     unsigned long currentMillis = millis();
-
-    Serial.println((unsigned long)(currentMillis - prevAppSwitchMillis));
 
     if ((unsigned long)(currentMillis - prevAppSwitchMillis) >= intervalSwitchApp) {
         ApplicationManager::getInstance().nextApp(false);
@@ -63,6 +64,73 @@ void ApplicationManager::resumeAutoSwitch()
     canSwitchApp = true;
 
     prevMainSwitchMillis = currentMillis;    
+}
+
+void ApplicationManager::setApplication(ApplicationView* newApplication, DisplayTransition transition)
+{
+    if(application) {
+        application->clear();
+        delete application;
+    }
+
+    application = newApplication;
+    application->beforeRender();
+
+    if(transition != TRANSITION_NONE) {
+        Display::getInstance().startTransition(transition);
+    }
+}
+
+void ApplicationManager::requestButton(int button)
+{
+    pendingButton = button;
+}
+
+void ApplicationManager::requestShowText(String text)
+{
+    pendingText = text;
+    pendingShowText = true;
+}
+
+void ApplicationManager::requestShowMainApp()
+{
+    pendingShowMainApp = true;
+}
+
+void ApplicationManager::requestLoadSwitchTime()
+{
+    pendingLoadSwitchTime = true;
+}
+
+void ApplicationManager::processPendingActions()
+{
+    if(pendingLoadSwitchTime) {
+        pendingLoadSwitchTime = false;
+        loadSwichTime();
+    }
+
+    if(pendingShowMainApp) {
+        pendingShowMainApp = false;
+        showMainApp();
+    }
+
+    if(pendingShowText) {
+        pendingShowText = false;
+        showText(pendingText);
+    }
+
+    if(pendingButton) {
+        int button = pendingButton;
+        pendingButton = 0;
+
+        if(button == 1) {
+            btn1_process();
+        } else if(button == 2) {
+            btn2_process();
+        } else if(button == 3) {
+            btn3_process();
+        }
+    }
 }
 
 void ApplicationManager::setBrightness(int value)
@@ -122,28 +190,22 @@ void ApplicationManager::setup()
     changeSwitchViewAuto(config.data.view_auto_switch); 
 
     // Start first App
-    application = new TimeApp();
-    application->beforeRender();
+    setApplication(new TimeApp(), TRANSITION_SLIDE_UP); // Logo slides out
 }
 
 void ApplicationManager::showText(String showText)
 {
     canSwitchApp = false;
 
-    application->clear();
-    application = new ShowTextApp(showText, true, 100, COLOR_WHITE);
-    application->beforeRender();
+    setApplication(new ShowTextApp(showText, true, 100, COLOR_WHITE), TRANSITION_SLIDE_UP);
 }
 
 void ApplicationManager::showMainApp()
 {
     resumeAutoSwitch();
 
-    application->clear();
     activeAppView = 0;
-
-    application = new TimeApp();
-    application->beforeRender();
+    setApplication(new TimeApp(), TRANSITION_SLIDE_DOWN);
 }
 
 void ApplicationManager::nextApp(bool fromButton) 
@@ -151,23 +213,24 @@ void ApplicationManager::nextApp(bool fromButton)
     Config& config = Config::getInstance();
 
     canSwitchApp = true;
-    application->clear();
       
     activeAppView++;
 
+    ApplicationView* nextApplication;
+
     if(activeAppView == 1) {
-        application = new WeatherApp();
+        nextApplication = new WeatherApp();
     } else if(activeAppView == 2) {
-        application = new TemperatureApp(0); // Local temperature
+        nextApplication = new TemperatureApp(0); // Local temperature
     } else if(activeAppView == 3) {
-        application = new TemperatureApp(2); // Humidity
+        nextApplication = new TemperatureApp(2); // Humidity
     } else if(activeAppView == 4 && fromButton) {
-        application = new BrightnessApp();
+        nextApplication = new BrightnessApp();
     } else if(activeAppView == 5 && fromButton) {
         canSwitchApp = false;
-        application = new ShowTextApp("IP:" + Config::getInstance().data.ip_address, false, 80, COLOR_RED);
+        nextApplication = new ShowTextApp("IP:" + Config::getInstance().data.ip_address, false, 80, COLOR_RED);
     } else {
-        application = new TimeApp();
+        nextApplication = new TimeApp();
         activeAppView = 0;
     }
 
@@ -175,11 +238,13 @@ void ApplicationManager::nextApp(bool fromButton)
         resumeAutoSwitch();        
     }
     
-    application->beforeRender();
+    setApplication(nextApplication, TRANSITION_SLIDE_UP);
 }   
 
 void ApplicationManager::loop()
 {
+    processPendingActions();
+
     if(allowedSwitchApp) {
         if(canSwitchApp && !autoSwitchRun) {
             autoSwitchMainTimer();
@@ -190,31 +255,40 @@ void ApplicationManager::loop()
         }
     }
 
-    int btn1State = digitalRead(BTN1_PIN);
-    int btn2State = digitalRead(BTN2_PIN);
-    int btn3State = digitalRead(BTN3_PIN);
+    unsigned long currentMillis = millis();
 
-    if (btn1LastState == LOW && btn1State == HIGH)
-    {
-        btn1_process();
-        Serial.println("TOUCHED 1");
-    } 
+    // Sampling buttons only every few ms works as debounce
+    if(currentMillis - prevButtonMillis >= BUTTON_READ_TIME) {
+        prevButtonMillis = currentMillis;
 
-    if (btn2LastState == LOW && btn2State == HIGH)
-    {
-        nextApp(true);
-        Serial.println("TOUCHED 2");
-    } 
+        int btn1State = digitalRead(BTN1_PIN);
+        int btn2State = digitalRead(BTN2_PIN);
+        int btn3State = digitalRead(BTN3_PIN);
 
-    if (btn3LastState == LOW && btn3State == HIGH)
-    {
-        btn3_process();
-        Serial.println("TOUCHED 3");
-    } 
+        if (btn1LastState == LOW && btn1State == HIGH)
+        {
+            btn1_process();
+            Serial.println("TOUCHED 1");
+        } 
 
-    btn1LastState = btn1State;
-    btn2LastState = btn2State;
-    btn3LastState = btn3State;
+        if (btn2LastState == LOW && btn2State == HIGH)
+        {
+            nextApp(true);
+            Serial.println("TOUCHED 2");
+        } 
 
-    application->render(Display::getInstance());
+        if (btn3LastState == LOW && btn3State == HIGH)
+        {
+            btn3_process();
+            Serial.println("TOUCHED 3");
+        } 
+
+        btn1LastState = btn1State;
+        btn2LastState = btn2State;
+        btn3LastState = btn3State;
+    }
+    if(currentMillis - prevRenderMillis >= FRAME_TIME) {
+        prevRenderMillis = currentMillis;
+        application->render(Display::getInstance());
+    }
 } 

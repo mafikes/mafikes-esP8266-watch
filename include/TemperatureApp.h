@@ -13,6 +13,8 @@ class TemperatureApp : public ApplicationView
         int view = 0;
 
         bool sensorLoad = false;
+        bool sensorRead = false;
+        unsigned long lastReadTime = 0;
 
         String showIcon;
         String lastShowedIcon;

@@ -12,6 +12,7 @@ const control = () => {
       show_text: "",
       custom_color_watch: null,
       time_update_interval: 1,
+      temperature_offset: 0,
       loading: false,
       loadingTimeout: null,
       error: false,
@@ -93,6 +94,7 @@ const control = () => {
         weather_location: this.data.weather_location,
         weather_key: this.data.weather_key,
         time_update_interval: this.data.time_update_interval,
+        temperature_offset: this.data.temperature_offset,
       };
 
       let urlData = new URLSearchParams(data).toString();
@@ -118,6 +120,7 @@ const control = () => {
 
         _this.data.time_offset = data.time_offset;
         _this.data.time_update_interval = data.time_update_interval;
+        _this.data.temperature_offset = data.temperature_offset ?? 0;
 
         _this.data.custom_color_watch = _this.rgbToHex(
           data.watch_color[0],

@@ -17,6 +17,11 @@
 AsyncWebServer server(80);
 DNSServer dns;
 
+// Web server callbacks run outside of loop(), so they only set requests
+// which are processed in loop(). No delay(), filesystem or display work there.
+bool restartRequested = false;
+unsigned long restartRequestedAt = 0;
+
 void Wifi::setup() {
     if(!LittleFS.begin()) {
         Serial.println("An Error has occurred while mounting SPIFFS");
@@ -60,7 +65,7 @@ void Wifi::setup() {
     server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
     server.on("/sync-time", HTTP_GET, [](AsyncWebServerRequest *request){
-       ServiceNTP::getInstance().updateTime();
+       ServiceNTP::getInstance().requestUpdate();
        request->send(200, "text/plain", "OK"); 
     });
 
@@ -71,14 +76,10 @@ void Wifi::setup() {
     // API
     server.on("/change-view", HTTP_GET, [](AsyncWebServerRequest *request){
         if(request->hasParam("button")) {
-            String button = request->getParam("button")->value();
+            int button = request->getParam("button")->value().toInt();
 
-            if(button == "1") {
-                ApplicationManager::getInstance().btn1_process();
-            } else if (button == "2") {
-                ApplicationManager::getInstance().btn2_process();
-            } else if (button == "3") {
-                ApplicationManager::getInstance().btn3_process();
+            if(button >= 1 && button <= 3) {
+                ApplicationManager::getInstance().requestButton(button);
             }
         }
 
@@ -94,22 +95,22 @@ void Wifi::setup() {
             Config& config = Config::getInstance();
             config.data.brightness = brightness;
             config.data.brightness_auto = false;
-            config.save();
+            config.requestSave();
         }
 
         request->send(200, "text/plain", "OK");
     });
 
     server.on("/show-main-app", HTTP_GET, [](AsyncWebServerRequest *request) {
-        ApplicationManager::getInstance().showMainApp();
+        ApplicationManager::getInstance().requestShowMainApp();
         request->send(200, "text/plain", "OK");
     });
 
     server.on("/show-text", HTTP_GET, [](AsyncWebServerRequest *request){
         if(request->hasParam("value")) {
             String text = request->getParam("value")->value();
-            if(text) {
-                ApplicationManager::getInstance().showText(text);
+            if(text.length() > 0) {
+                ApplicationManager::getInstance().requestShowText(text);
             } 
         }
 
@@ -117,16 +118,22 @@ void Wifi::setup() {
     });
 
     server.on("/save", HTTP_GET, [](AsyncWebServerRequest *request){
-        String string_brightness_auto = request->getParam("brightness_auto")->value();
-        int brightness = request->getParam("brightness")->value().toInt();
-        int time_offset = request->getParam("time_offset")->value().toInt();
-        int view_main_switch_time = request->getParam("view_main_switch_time")->value().toInt();
-        int view_app_switch_time = request->getParam("view_app_switch_time")->value().toInt();
-        String weather_location = request->getParam("weather_location")->value();
-        String weather_key = request->getParam("weather_key")->value();
-        int time_update_interval = request->getParam("time_update_interval")->value().toInt();
-        
         Config& config = Config::getInstance();
+
+        // Missing parameters keep the current value
+        auto param = [request](const char* name, const String& fallback) -> String {
+            return request->hasParam(name) ? request->getParam(name)->value() : fallback;
+        };
+
+        String string_brightness_auto = param("brightness_auto", config.data.brightness_auto ? "true" : "false");
+        int brightness = param("brightness", String(config.data.brightness)).toInt();
+        int time_offset = param("time_offset", String(config.data.time_offset)).toInt();
+        int view_main_switch_time = param("view_main_switch_time", String(config.data.view_main_switch_time)).toInt();
+        int view_app_switch_time = param("view_app_switch_time", String(config.data.view_app_switch_time)).toInt();
+        String weather_location = param("weather_location", config.data.weather_location);
+        String weather_key = param("weather_key", config.data.weather_key);
+        int time_update_interval = param("time_update_interval", String(config.data.time_update_interval)).toInt();
+        float temperature_offset = param("temperature_offset", String(config.data.temperature_offset)).toFloat();
 
         bool brightness_auto = false;
         if(string_brightness_auto == "true") {
@@ -145,7 +152,9 @@ void Wifi::setup() {
         config.data.weather_location = weather_location;  
         config.data.weather_key = weather_key;  
         config.data.time_update_interval = time_update_interval;  
-        config.save();
+        config.data.temperature_offset = temperature_offset;  
+        config.requestSave();
+        ApplicationManager::getInstance().requestLoadSwitchTime();
         
         request->send(200);
     });
@@ -158,9 +167,9 @@ void Wifi::setup() {
 
             Config& config = Config::getInstance();    
             config.data.view_app_switch_time = time;        
-            config.save();
+            config.requestSave();
 
-            ApplicationManager::getInstance().loadSwichTime();
+            ApplicationManager::getInstance().requestLoadSwitchTime();
         }
 
         request->send(200, "text/plain", "OK");
@@ -177,7 +186,7 @@ void Wifi::setup() {
             config.data.watch_color[0] = red.toInt();
             config.data.watch_color[1] = green.toInt();
             config.data.watch_color[2] = blue.toInt(); 
-            config.save();
+            config.requestSave();
         }
 
         request->send(200, "text/plain", "OK");
@@ -185,7 +194,8 @@ void Wifi::setup() {
 
     server.on("/restart", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/plain", "OK");
-        ESP.reset();
+        restartRequested = true;
+        restartRequestedAt = millis();
     });
 
     server.begin();
@@ -194,5 +204,11 @@ void Wifi::setup() {
 
 void Wifi::loop() {
     MDNS.update();
+
+    // Give the web server time to send the response before restart
+    if(restartRequested && millis() - restartRequestedAt > 500) {
+        Config::getInstance().loop(); // Write pending config before restart
+        ESP.restart();
+    }
 }
 

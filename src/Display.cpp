@@ -19,32 +19,30 @@
 // #define MATRIX_MODE NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG
 #define MATRIX_TYPE NEO_GRB + NEO_KHZ800
 
+#define TRANSITION_TIME 350 // ms
+
 #define arrayLength(array) (sizeof((array))/sizeof((array)[0]))
 
-Display::Display() : matrix(MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_PIN, MATRIX_MODE, MATRIX_TYPE) {    
+Display::Display() : canvas(MATRIX_WIDTH, MATRIX_HEIGHT), matrix(MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_PIN, MATRIX_MODE, MATRIX_TYPE) {    
     setup();
 }
 
 void Display::setup() {
     matrix.begin();  
-    matrix.setTextWrap(false);
+    canvas.setTextWrap(false);
 
     setBrightness(30); 
 }
 
-void Display::refresh() {
-   matrix.drawPixel(0, 8 - 1, matrix.Color(0, 0, 255));
-   matrix.show();
-}
-
 void Display::clear() {
-    matrix.fillScreen(0); 
+    canvas.fillScreen(0); 
 }
 
 void Display::setBrightness(int value) 
 {
     brightness = value; 
     matrix.setBrightness(brightness);
+    forceShow = true;
 }
 
 uint32_t Display::color(DisplayColor color)
@@ -54,16 +52,16 @@ uint32_t Display::color(DisplayColor color)
 
 void Display::drawText(String text, bool defaultFont, DisplayPosition pos, DisplayColor colorText) {
     if (defaultFont) {
-        matrix.setFont();
-        matrix.setCursor(pos.x, pos.y);
+        canvas.setFont();
+        canvas.setCursor(pos.x, pos.y);
     }else{
-        matrix.setFont(&AwtrixFont);
-        matrix.setCursor(pos.x, pos.y+6);
+        canvas.setFont(&AwtrixFont);
+        canvas.setCursor(pos.x, pos.y+6);
     }
 
-    matrix.setTextWrap(false);
-    matrix.setTextColor(color(colorText)); 
-    matrix.print(text);     
+    canvas.setTextWrap(false);
+    canvas.setTextColor(color(colorText)); 
+    canvas.print(text);     
 }
 
 void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int16_t w, int16_t h) 
@@ -78,7 +76,7 @@ void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int
         RGB_bmp_fixed[pixel] = (r5 << 11) | (g6 << 5) | b5;
     }
     
-    matrix.drawRGBBitmap(x, y, RGB_bmp_fixed, w, h);  
+    canvas.drawRGBBitmap(x, y, RGB_bmp_fixed, w, h);  
 }
 
 void Display::resetIconAnimation() 
@@ -86,6 +84,7 @@ void Display::resetIconAnimation()
     lastShowedIcon = 0;    
     repeatedAnimation = 0;
     lastIconAnimationCount = 0;
+    iconAnimationStarted = false;
 }
 
 void Display::showIcon(const uint32_t bitmap[][64]) 
@@ -99,22 +98,37 @@ void Display::showAnimateIcon(const uint32_t bitmap[][64], int animationCount, i
         resetIconAnimation();
     }
 
-    if(animationCount > 1 && repeatedAnimation < animateSteps) {
-        fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
-        
-        lastShowedIcon++;
-        if (lastShowedIcon >= animationCount) { // animation is showed full, start it from zero
-            lastShowedIcon = 0;
-            repeatedAnimation++;
-            delay(400);
-        }
-    } else {
-        fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
-    }
-
     lastIconAnimationCount = animationCount;
 
-    delay(delayTime);
+    if(animationCount > 1 && repeatedAnimation < animateSteps) {
+        unsigned long currentMillis = millis();
+
+        if(!iconAnimationStarted) {
+            iconAnimationStarted = true;
+            lastIconFrameTime = currentMillis;
+            iconFrameDelay = delayTime;
+        }
+
+        if(currentMillis - lastIconFrameTime >= iconFrameDelay) {
+            lastIconFrameTime = currentMillis;
+
+            lastShowedIcon++;
+            if (lastShowedIcon >= animationCount) { // animation is showed full, start it from zero
+                lastShowedIcon = 0;
+                repeatedAnimation++;
+            }
+
+            // Last frame of animation stays longer
+            iconFrameDelay = lastShowedIcon == animationCount - 1 ? delayTime + 400 : delayTime;
+        }
+
+        if(repeatedAnimation < animateSteps) {
+            fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
+            return;
+        }
+    }
+
+    fixdrawRGBBitmap(0, 0, bitmap[0], 8, 8);
 }
 
 void Display::resetLoading()
@@ -124,7 +138,16 @@ void Display::resetLoading()
 
 void Display::showLoading(int delayTime)
 {
-    loadingRepeated++;
+    unsigned long currentMillis = millis();
+
+    if(loadingRepeated == 0 || currentMillis - lastLoadingTime >= (unsigned long)delayTime) {
+        lastLoadingTime = currentMillis;
+
+        loadingRepeated++;
+        if(loadingRepeated > 4) { 
+            loadingRepeated = 1;
+        }
+    }
 
     int col = 0;
     int fullCol = 0;
@@ -147,61 +170,109 @@ void Display::showLoading(int delayTime)
         drawPixel(11+i, 3, COLOR_WHITE);
         drawPixel(11+i, 4, COLOR_WHITE);
     }
-
-    if(loadingRepeated == 4) { 
-        loadingRepeated = 0;
-    }
-    
-    delay(delayTime);
 }
 
 void Display::drawTextWithIcon(String text, DisplayPosition pos, DisplayColor colorText) 
 {
-    matrix.setFont(&AwtrixFont);
-    matrix.setCursor(pos.x+8, pos.y+6);
-    matrix.setTextColor(color(colorText));
+    canvas.setFont(&AwtrixFont);
+    canvas.setCursor(pos.x+8, pos.y+6);
+    canvas.setTextColor(color(colorText));
     
-    matrix.print(text);         
+    canvas.print(text);         
 }
 
-void Display::showTextWithIconAnimated(const uint32_t bitmap[][64], int iconSize, String text, DisplayPosition textPosition, DisplayColor textColor) 
-{  
-    fixdrawRGBBitmap(0, 0, bitmap[lastShowedIcon], 8, 8);
+void Display::startTransition(DisplayTransition newTransition)
+{
+    // Last frame of the previous application slides out
+    memcpy(transitionFrame, canvas.getBuffer(), sizeof(transitionFrame));
+    transition = newTransition;
+    transitionStart = millis();
+}
 
-    lastShowedIcon++;
-    if (lastShowedIcon >= iconSize) {
-        lastShowedIcon = 0;
+int Display::transitionOffset()
+{
+    if(transition == TRANSITION_NONE) {
+        return MATRIX_HEIGHT;
     }
 
-    matrix.setFont(&AwtrixFont);
-    matrix.setCursor(textPosition.x+8, textPosition.y+6);
-    matrix.setTextColor(color(textColor));
-    matrix.print(text);
+    unsigned long elapsed = millis() - transitionStart;
 
-    delay(300);
+    if(elapsed >= TRANSITION_TIME) {
+        transition = TRANSITION_NONE;
+        return MATRIX_HEIGHT;
+    }
+
+    // Ease out, fast start and slow end
+    float progress = 1.0f - (float)elapsed / TRANSITION_TIME;
+    progress = 1.0f - progress * progress * progress;
+
+    return (int)(progress * MATRIX_HEIGHT);
 }
 
 void Display::show() 
 {
+    uint16_t frame[NUMPIXELS];
+    uint16_t *current = canvas.getBuffer();
+    int offset = transitionOffset();
+
+    for(int y = 0; y < MATRIX_HEIGHT; y++) {
+        for(int x = 0; x < MATRIX_WIDTH; x++) {
+            uint16_t pixel;
+
+            if(offset >= MATRIX_HEIGHT) {
+                pixel = current[y * MATRIX_WIDTH + x];
+            } else if(transition == TRANSITION_SLIDE_UP) {
+                // Old frame moves up, new frame comes from bottom
+                int source = y + offset;
+                pixel = source < MATRIX_HEIGHT
+                    ? transitionFrame[source * MATRIX_WIDTH + x]
+                    : current[(source - MATRIX_HEIGHT) * MATRIX_WIDTH + x];
+            } else {
+                // Old frame moves down, new frame comes from top
+                int source = y - offset;
+                pixel = source >= 0
+                    ? transitionFrame[source * MATRIX_WIDTH + x]
+                    : current[(source + MATRIX_HEIGHT) * MATRIX_WIDTH + x];
+            }
+
+            frame[y * MATRIX_WIDTH + x] = pixel;
+        }
+    }
+
+    // Sending data to LEDs blocks interrupts, skip it when nothing changed
+    if(!forceShow && memcmp(frame, shownFrame, sizeof(shownFrame)) == 0) {
+        return;
+    }
+
+    memcpy(shownFrame, frame, sizeof(shownFrame));
+    forceShow = false;
+
+    for(int y = 0; y < MATRIX_HEIGHT; y++) {
+        for(int x = 0; x < MATRIX_WIDTH; x++) {
+            matrix.drawPixel(x, y, frame[y * MATRIX_WIDTH + x]);
+        }
+    }
+
     matrix.show();
 }
 
 void Display::showLogo() {
-    matrix.clear();
+    canvas.fillScreen(0);
     matrix.setBrightness(40);
+    forceShow = true;
 
-    matrix.setFont(&AwtrixFont);
-    matrix.setTextColor(color(COLOR_WHITE));
-    matrix.setCursor(2, 6);
-    matrix.print("M");
+    canvas.setFont(&AwtrixFont);
+    canvas.setTextColor(color(COLOR_WHITE));
+    canvas.setCursor(2, 6);
+    canvas.print("M");
 
-    matrix.setTextColor(color(COLOR_RED));
-    matrix.setCursor(8, 6);
-    matrix.print("A");
+    canvas.setTextColor(color(COLOR_RED));
+    canvas.setCursor(8, 6);
+    canvas.print("A");
 
-    matrix.setTextColor(color(COLOR_WHITE));
-    matrix.setCursor(12, 6);
-    matrix.print("FIKES");
+    canvas.setTextColor(color(COLOR_WHITE));
+    canvas.setCursor(12, 6);
+    canvas.print("FIKES");
 
     drawLine(28, 6, 2, 6, {200,200,200});
 
@@ -210,19 +281,19 @@ void Display::showLogo() {
     drawPixel(31, 0, COLOR_RED);
     drawPixel(31, 7, COLOR_RED);
 
-    matrix.show();
+    show();
 }
 
 
 void Display::drawPixel(uint16_t  x, uint16_t  y, DisplayColor pixelColor) {
-    matrix.drawPixel(x, y, color(pixelColor));
+    canvas.drawPixel(x, y, color(pixelColor));
 }
 
 void Display::fillScreen(DisplayColor lineColor) {
-    matrix.fillScreen(color(lineColor));
+    canvas.fillScreen(color(lineColor));
 }
 
 void Display::drawLine(uint16_t  x0, uint16_t  y0, uint16_t  X1,uint16_t  Y1, DisplayColor lineColor) {
-    matrix.drawLine(x0, y0, X1, Y1, color(lineColor));
+    canvas.drawLine(x0, y0, X1, Y1, color(lineColor));
     
 }

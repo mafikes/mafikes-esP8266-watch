@@ -23,14 +23,25 @@ class ApplicationManager {
         void autoTimerAppSwitch();
         void autoSwitchMainTimer();
         void resumeAutoSwitch();
+        void setApplication(ApplicationView* newApplication, DisplayTransition transition = TRANSITION_NONE);
+        void processPendingActions();
+
+        // Requests from web server callbacks, processed in loop()
+        int pendingButton = 0;
+        bool pendingShowText = false;
+        bool pendingShowMainApp = false;
+        bool pendingLoadSwitchTime = false;
+        String pendingText;
 
         unsigned long prevMainSwitchMillis = 0;
         unsigned long prevAppSwitchMillis = 0;
+        unsigned long prevRenderMillis = 0;
+        unsigned long prevButtonMillis = 0;
         unsigned long intervalMainSwitchApp = 300000; // 5min 
         unsigned long intervalSwitchApp = 10000; // 10s
 
         String showTextValue; 
-        ApplicationView* application;
+        ApplicationView* application = nullptr;
     public:
         static ApplicationManager& getInstance() {
             static ApplicationManager instance;
@@ -48,6 +59,12 @@ class ApplicationManager {
         void setup();
         void nextApp(bool fromButton);
         void loop();
+
+        // Safe to call from async web server callbacks
+        void requestButton(int button);
+        void requestShowText(String text);
+        void requestShowMainApp();
+        void requestLoadSwitchTime();
 };
 
 #endif

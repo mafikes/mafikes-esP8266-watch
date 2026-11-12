@@ -11,7 +11,7 @@ void Config::load() {
     File configFile = LittleFS.open(configPath, "r");
 
     // Use arduinojson.org/v6/assistant to compute the capacity.
-    StaticJsonDocument<600> doc;
+    StaticJsonDocument<1024> doc;
 
     DeserializationError error = deserializeJson(doc, configFile);
     if(error) {
@@ -30,6 +30,7 @@ void Config::load() {
     data.watch_color_custom = doc["watch_color_custom"];
     data.time_offset = doc["time_offset"];
     data.time_update_interval = doc["time_update_interval"];
+    data.temperature_offset = doc["temperature_offset"] | 0.0f;
 
     data.watch_color[0] = doc["watch_color"][0]; 
     data.watch_color[1] = doc["watch_color"][1];
@@ -50,7 +51,7 @@ void Config::save()
         return;
     }
 
-    StaticJsonDocument<600> doc;
+    StaticJsonDocument<1024> doc;
 
     doc["brightness"] = data.brightness;
     doc["brightness_auto"] = data.brightness_auto;
@@ -64,6 +65,7 @@ void Config::save()
     doc["watch_color_custom"] = data.watch_color_custom;
     doc["time_offset"] = data.time_offset;
     doc["time_update_interval"] = data.time_update_interval;
+    doc["temperature_offset"] = data.temperature_offset;
     
     JsonArray newColor = doc.createNestedArray("watch_color");
     newColor.add(data.watch_color[0]);
@@ -75,6 +77,19 @@ void Config::save()
     }
 
     file.close();
+}
+
+void Config::requestSave()
+{
+    pendingSave = true;
+}
+
+void Config::loop()
+{
+    if(pendingSave) {
+        pendingSave = false;
+        save();
+    }
 }
 
 void Config::setup() {
