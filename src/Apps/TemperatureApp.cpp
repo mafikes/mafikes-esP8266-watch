@@ -9,6 +9,7 @@
 
 #define DHTPIN 14
 #define DHTTYPE DHT11
+#define DHT_READ_INTERVAL 2000 // ms, DHT11 can't be read faster
 
 #define arrayLength(array) (sizeof((array))/sizeof((array)[0]))
 
@@ -105,12 +106,18 @@ void TemperatureApp::readData()
     }
 
     sensorLoad = true;
+    temperature += Config::getInstance().data.temperature_offset;
     heatIndex = dht.computeHeatIndex(temperature, humidity, false);
 }
 
 void TemperatureApp::render(Display& display) 
 {
-    readData();
+    unsigned long currentMillis = millis();
+    if(!sensorRead || currentMillis - lastReadTime >= DHT_READ_INTERVAL) {
+        sensorRead = true;
+        lastReadTime = currentMillis;
+        readData();
+    }
 
     if(view == 1) {
         showHeatIndex(display);

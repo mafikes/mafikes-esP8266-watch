@@ -21,6 +21,7 @@ struct ConfigFile {
     String weather_location;
 
     int time_offset;
+    float temperature_offset; // Correction of DHT sensor heated by electronics
     bool watch_color_custom;
     int watch_color[3] = {255, 255, 255};
 };
@@ -33,6 +34,7 @@ class Config
         void operator = (Config const&);
 
         const String configPath = "/config.json";        
+        bool pendingSave = false;
     public:      
         static Config& getInstance() {
             static Config instance;
@@ -44,6 +46,8 @@ class Config
         void setup();  
         void load();
         void save();
+        void requestSave();
+        void loop();
 };
 
 #endif

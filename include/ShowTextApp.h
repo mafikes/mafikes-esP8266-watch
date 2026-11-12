@@ -12,6 +12,7 @@ class ShowTextApp : public ApplicationView
         int16_t position;
         int showTextLenght;
         unsigned long animationSpeed;
+        unsigned long lastStepTime = 0;
         DisplayColor textColor;
     public:
         ShowTextApp(String, bool, int, DisplayColor color);       

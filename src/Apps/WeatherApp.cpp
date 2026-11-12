@@ -12,10 +12,20 @@
 #include <ArduinoJson.h>
 
 #define arrayLength(array) (sizeof((array))/sizeof((array)[0]))
+#define WEATHER_RETRY_INTERVAL 30000 // 30s
+#define WEATHER_HTTP_TIMEOUT 3000 // 3s, must stay below watchdog
 
 void WeatherApp::askServer() 
 {
     Config& config = Config::getInstance();
+
+    requested = true;
+    lastRequestTime = millis();
+
+    if(config.data.weather_key.length() == 0 || config.data.weather_location.length() == 0) {
+        Serial.println(F("Weather: missing API key or location."));
+        return;
+    }
 
     DynamicJsonDocument doc(1800);    
     WiFiClient client;
@@ -23,8 +33,9 @@ void WeatherApp::askServer()
 
     char url[150];
     snprintf(url, sizeof(url), "http://api.openweathermap.org/data/2.5/weather?id=%s&appid=%s&units=metric", 
-             config.data.weather_location, config.data.weather_key);
+             config.data.weather_location.c_str(), config.data.weather_key.c_str());
 
+    http.setTimeout(WEATHER_HTTP_TIMEOUT);
     http.begin(client, url);
     int httpCode = http.GET();
 
@@ -36,6 +47,7 @@ void WeatherApp::askServer()
             if (error) {
                 Serial.print(F("deserializeJson() failed: "));
                 Serial.println(error.c_str());
+                http.end();
                 return;
             }
             
@@ -90,7 +102,9 @@ void WeatherApp::render(Display& display)
     display.clear();
 
     if(!downloaded) {
-        askServer();        
+        if(!requested || millis() - lastRequestTime >= WEATHER_RETRY_INTERVAL) {
+            askServer();
+        }
         display.showLoading();        
     } else {    
         showIcon(display);              

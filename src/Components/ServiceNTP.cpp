@@ -47,16 +47,24 @@ void ServiceNTP::updateTime()
     }
 }
 
+void ServiceNTP::requestUpdate()
+{
+    pendingUpdate = true;
+}
+
 void ServiceNTP::loop()
 {
     // Update Time by set time
     unsigned long currentMillis = millis();
 
-    // Update time every 48 hours
+    // Update time every time_update_interval hours (at least 1 hour)
+    unsigned long intervalHours = max(1, Config::getInstance().data.time_update_interval);
+
     if (
-        firstStart ||
-        ((unsigned long)(currentMillis - prevTime) >= (((1000 * 60) * 60) * Config::getInstance().data.time_update_interval)))
+        firstStart || pendingUpdate ||
+        ((unsigned long)(currentMillis - prevTime) >= intervalHours * 60UL * 60UL * 1000UL))
     {
+        pendingUpdate = false;
         updateTime();
         prevTime = currentMillis;
         firstStart = false;
@@ -68,6 +76,7 @@ void ServiceNTP::setup()
     while (WiFi.status() != WL_CONNECTED)
     {
         Serial.println("Wifi not connected, NTP cant be load.");
+        delay(500);
     }
 
     timeClient.begin();

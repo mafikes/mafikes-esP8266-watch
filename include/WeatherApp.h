@@ -8,7 +8,9 @@ class WeatherApp : public ApplicationView
 {
     private:
         float temperature = 0;      
-        float downloaded = false;    
+        bool downloaded = false;    
+        bool requested = false;
+        unsigned long lastRequestTime = 0;
         String temperatureIcon;     
         String lastTemperatureIcon;      
     public:
