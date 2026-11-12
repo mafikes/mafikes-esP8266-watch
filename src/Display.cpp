@@ -293,6 +293,21 @@ void Display::showLogo() {
 }
 
 
+void Display::showUpdateProgress(int percent)
+{
+    clear();
+    drawText("UPDATE", false, {4, 0}, COLOR_WHITE);
+
+    drawLine(0, 7, MATRIX_WIDTH - 1, 7, {40, 40, 40});
+
+    int width = percent * MATRIX_WIDTH / 100;
+    if(width > 0) {
+        drawLine(0, 7, width - 1, 7, COLOR_GREEN);
+    }
+
+    show();
+}
+
 void Display::drawPixel(uint16_t  x, uint16_t  y, DisplayColor pixelColor) {
     canvas.drawPixel(x, y, color(pixelColor));
 }

@@ -3,6 +3,7 @@
 #include <Config.h>
 #include <ApplicationManager.h>
 #include <ServiceNTP.h>
+#include <OTA.h>
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -61,6 +62,9 @@ void Wifi::setup() {
         return;
     }
     
+    // Firmware and filesystem update over WiFi
+    OTA::getInstance().setup(server);
+
     // Homepage
     server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 

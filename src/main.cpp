@@ -8,6 +8,7 @@
 #include <AutoBrightness.h>
 #include <RTC.h>
 #include <ServiceNTP.h>
+#include <OTA.h>
 
 Wifi wifi;
 Config &config = Config::getInstance();
@@ -16,6 +17,7 @@ ApplicationManager &applicationManager = ApplicationManager::getInstance();
 Display &display = Display::getInstance();
 AutoBrightness autoBrightness;
 RTC &rtc = RTC::getInstance();
+OTA &ota = OTA::getInstance();
 
 void setup()
 {
@@ -42,6 +44,15 @@ void loop()
 {
     wifi.loop();
     config.loop();
+    ota.loop();
+
+    // During update show only the progress, apps and NTP would slow it down
+    if (ota.isRunning())
+    {
+        display.showUpdateProgress(ota.progress());
+        return;
+    }
+
     ntp.loop();
 
     if (config.data.brightness_auto)
