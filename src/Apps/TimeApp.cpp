@@ -3,11 +3,67 @@
 #include <RTC.h>
 #include <ServiceNTP.h>
 
-String TimeApp::repairDigit(int digit) 
+#define DIGIT_ANIMATION_TIME 300 // ms
+#define DIGIT_WIDTH 4 // AwtrixFont digit advance
+#define COLON_WIDTH 2 // AwtrixFont colon advance
+
+void TimeApp::drawTime(Display& display, const DateTime& now, int16_t x, bool showSeconds)
 {
-    String repairedDigit = String(digit);
-    if(digit < 10) repairedDigit = "0"+repairedDigit;
-    return repairedDigit;
+    char digits[6] = {
+        (char)('0' + now.hour() / 10), (char)('0' + now.hour() % 10),
+        (char)('0' + now.minute() / 10), (char)('0' + now.minute() % 10),
+        (char)('0' + now.second() / 10), (char)('0' + now.second() % 10)
+    };
+
+    // X position of each digit in "HH:MM:SS"
+    const int16_t digitX[6] = {
+        x, (int16_t)(x + DIGIT_WIDTH),
+        (int16_t)(x + 2 * DIGIT_WIDTH + COLON_WIDTH), (int16_t)(x + 3 * DIGIT_WIDTH + COLON_WIDTH),
+        (int16_t)(x + 4 * DIGIT_WIDTH + 2 * COLON_WIDTH), (int16_t)(x + 5 * DIGIT_WIDTH + 2 * COLON_WIDTH)
+    };
+
+    int digitCount = showSeconds ? 6 : 4;
+
+    unsigned long currentMillis = millis();
+
+    // First frame after app start is drawn without animation
+    if(!digitsInitialized) {
+        digitsInitialized = true;
+        memcpy(currentDigits, digits, sizeof(currentDigits));
+        memcpy(previousDigits, digits, sizeof(previousDigits));
+        for(int i = 0; i < 6; i++) {
+            digitChangeTime[i] = currentMillis - DIGIT_ANIMATION_TIME;
+        }
+    }
+
+    for(int i = 0; i < digitCount; i++) {
+        if(digits[i] != currentDigits[i]) {
+            previousDigits[i] = currentDigits[i];
+            currentDigits[i] = digits[i];
+            digitChangeTime[i] = currentMillis;
+        }
+
+        unsigned long elapsed = currentMillis - digitChangeTime[i];
+
+        if(elapsed >= DIGIT_ANIMATION_TIME) {
+            display.drawChar(currentDigits[i], {digitX[i], 0}, clockColor);
+            continue;
+        }
+
+        // Ease out, fast start and slow end
+        float progress = 1.0f - (float)elapsed / DIGIT_ANIMATION_TIME;
+        progress = 1.0f - progress * progress * progress;
+        int16_t shift = (int16_t)(progress * 8);
+
+        display.drawChar(previousDigits[i], {digitX[i], (int16_t)(-shift)}, clockColor);
+        display.drawChar(currentDigits[i], {digitX[i], (int16_t)(8 - shift)}, clockColor);
+    }
+
+    display.drawChar(':', {(int16_t)(x + 2 * DIGIT_WIDTH), 0}, clockColor);
+
+    if(showSeconds) {
+        display.drawChar(':', {(int16_t)(x + 4 * DIGIT_WIDTH + COLON_WIDTH), 0}, clockColor);
+    }
 }
 
 void TimeApp::beforeRender() {
@@ -59,9 +115,9 @@ void TimeApp::render(Display& display)
     }
 
     if(clockTheme == 1) {        
-        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()) + ":" + repairDigit(now.second()), false, {2, 0}, clockColor);
+        drawTime(display, now, 2, true);
     } else if(clockTheme == 2) {       
-        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {8, 0}, clockColor);      
+        drawTime(display, now, 8, false);      
     } else if(clockTheme == 3) {
         DisplayColor headerColor = clockColor;
 
@@ -81,9 +137,9 @@ void TimeApp::render(Display& display)
         int16_t positionDay = now.day() >= 10 ? 1 : 3;
         display.drawText(String(now.day()), false, {positionDay, 1}, COLOR_BLACK);
 
-        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {12, 0}, clockColor);
+        drawTime(display, now, 12, false);
     } else if(clockTheme == 4) {
-        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {8, 0}, clockColor);
+        drawTime(display, now, 8, false);
 
         // Print Day of Week under clock
         int offset = 0;
@@ -115,7 +171,7 @@ void TimeApp::render(Display& display)
         int16_t positionDay = now.day() >= 10 ? 1 : 3;
         display.drawText(String(now.day()), false, {positionDay, 1}, COLOR_BLACK);
 
-        display.drawText(repairDigit(now.hour()) + ":" + repairDigit(now.minute()), false, {13, 0}, clockColor);
+        drawTime(display, now, 13, false);
 
         // Print Days of Week under clock
         int offset = 9;

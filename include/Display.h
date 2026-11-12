@@ -50,6 +50,7 @@ class Display {
         void clear();
         void setBrightness(int);
         void drawText(String, bool, DisplayPosition, DisplayColor = {255, 255, 255});
+        void drawChar(char, DisplayPosition, DisplayColor);
         void fixdrawRGBBitmap(int16_t, int16_t, const uint32_t*, int16_t, int16_t);
         void resetLoading();
         void showLoading(int = 300);

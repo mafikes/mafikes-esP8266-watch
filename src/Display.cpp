@@ -64,6 +64,14 @@ void Display::drawText(String text, bool defaultFont, DisplayPosition pos, Displ
     canvas.print(text);     
 }
 
+void Display::drawChar(char character, DisplayPosition pos, DisplayColor colorText)
+{
+    canvas.setFont(&AwtrixFont);
+    canvas.setCursor(pos.x, pos.y+6);
+    canvas.setTextColor(color(colorText));
+    canvas.write(character);
+}
+
 void Display::fixdrawRGBBitmap(int16_t x, int16_t y, const uint32_t *bitmap, int16_t w, int16_t h) 
 {
     uint16_t RGB_bmp_fixed[w * h];

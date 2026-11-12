@@ -40,7 +40,7 @@ Power: 256 LEDs at high brightness draw several amps. A brownout is a possible r
   - Buttons are sampled every 30 ms (`BUTTON_READ_TIME`), which acts as debounce.
   - Apps are switched **only** via `setApplication(app, transition)`, which deletes the old app and starts the slide transition.
 - **Apps** (`src/Apps/`, derive from `include/ApplicationView.h`): `beforeRender()`, `render(Display&)`, `clear()`, `btn1_process()`, `btn3_process()`.
-  - `TimeApp`: 5 clock themes (button 3) and colors (button 1), saved to config.
+  - `TimeApp`: 5 clock themes (button 3) and colors (button 1), saved to config. Hours and minutes use a rolling digit animation (`drawTime`): each changed digit (including seconds in theme 1) slides up and the new one comes from the bottom (`DIGIT_ANIMATION_TIME` 350 ms, ease-out). Digits are positioned using AwtrixFont advances (digit 4 px, colon 2 px).
   - `WeatherApp`: OpenWeatherMap API, retry at most every 30 s, 3 s HTTP timeout.
   - `TemperatureApp(view)`: 0 temperature, 1 heat index, 2 humidity. DHT is read every 2 s.
   - `BrightnessApp`, `ShowTextApp` (scrolling text).
@@ -83,7 +83,9 @@ Fixed:
 - **Slide transitions** between apps (canvas + frame composition), removed all `delay()` from rendering, LEDs pushed only on change, button debounce, DHT read every 2 s, removed Serial spam.
 - **Temperature correction** `temperature_offset` (config, web UI, `TemperatureApp::readData`), config capacity raised to 1024.
 
-Status: compiles, **not yet tested on hardware**. Verify icon animation speed, transition smoothness and double button presses.
+- **Rolling digits** in `TimeApp` when hours/minutes change, `Display::drawChar()` helper.
+
+Status: slide transitions and stability fixes tested on hardware, look good. Rolling digits compile, not yet tested on hardware.
 
 ## Known bugs (not fixed yet)
 
