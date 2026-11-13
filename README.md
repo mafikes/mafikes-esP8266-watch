@@ -7,10 +7,10 @@ by three hardware buttons and a web interface on your local network.
 ## Features
 
 - **Clock** with 5 themes (time with seconds, time only, calendar tile with day of month, day-of-week indicator, ...) and selectable or custom colors
-- **Rolling digit animation**: when the time changes, the old digit slides up and the new one comes in from the bottom
+- **Rolling digit animation**: when the time changes, the old digit falls down and the new one drops in from the top
 - **Weather** from OpenWeatherMap with animated icons (sun, clouds, rain, thunder, snow, mist)
 - **Indoor temperature and humidity** from a DHT11 sensor, with a configurable temperature correction
-- **Slide transitions** between apps: the old screen slides out while the new one slides in
+- **Slide transitions** between apps: the new screen drops in from the top and pushes the old one out
 - **Automatic app switching**: periodically cycles through the apps and returns to the clock
 - **Auto brightness** based on a photoresistor, or manual brightness
 - **Accurate time** from a DS3231 RTC (keeps time without internet), synchronized via NTP
