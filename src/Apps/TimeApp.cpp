@@ -55,8 +55,8 @@ void TimeApp::drawTime(Display& display, const DateTime& now, int16_t x, bool sh
         progress = 1.0f - progress * progress * progress;
         int16_t shift = (int16_t)(progress * 8);
 
-        display.drawChar(previousDigits[i], {digitX[i], (int16_t)(-shift)}, clockColor);
-        display.drawChar(currentDigits[i], {digitX[i], (int16_t)(8 - shift)}, clockColor);
+        display.drawChar(previousDigits[i], {digitX[i], shift}, clockColor);
+        display.drawChar(currentDigits[i], {digitX[i], (int16_t)(shift - 8)}, clockColor);
     }
 
     display.drawChar(':', {(int16_t)(x + 2 * DIGIT_WIDTH), 0}, clockColor);

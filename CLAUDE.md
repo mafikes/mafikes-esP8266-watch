@@ -45,14 +45,14 @@ Power: 256 LEDs at high brightness draw several amps. A brownout is a possible r
   - Buttons are sampled every 30 ms (`BUTTON_READ_TIME`), which acts as debounce.
   - Apps are switched **only** via `setApplication(app, transition)`, which deletes the old app and starts the slide transition.
 - **Apps** (`src/Apps/`, derive from `include/ApplicationView.h`): `beforeRender()`, `render(Display&)`, `clear()`, `btn1_process()`, `btn3_process()`.
-  - `TimeApp`: 5 clock themes (button 3) and colors (button 1), saved to config. Hours and minutes use a rolling digit animation (`drawTime`): each changed digit (including seconds in theme 1) slides up and the new one comes from the bottom (`DIGIT_ANIMATION_TIME` 350 ms, ease-out). Digits are positioned using AwtrixFont advances (digit 4 px, colon 2 px).
+  - `TimeApp`: 5 clock themes (button 3) and colors (button 1), saved to config. Hours and minutes use a rolling digit animation (`drawTime`): each changed digit (including seconds in theme 1) falls down and the new one comes from the top (`DIGIT_ANIMATION_TIME` 350 ms, ease-out). Digits are positioned using AwtrixFont advances (digit 4 px, colon 2 px).
   - `WeatherApp`: OpenWeatherMap API, retry at most every 30 s, 3 s HTTP timeout.
   - `TemperatureApp(view)`: 0 temperature, 1 heat index, 2 humidity. DHT is read every 2 s.
   - `BrightnessApp`, `ShowTextApp` (scrolling text).
 - **Display** (`src/Display.cpp`):
   - Everything is drawn into an in-memory `GFXcanvas16 canvas`, not directly to the matrix.
   - `show()` composes the frame (including a running transition) and pushes it to the LEDs **only when it changed**. Pushing to the LEDs disables interrupts for ~8 ms and disturbs WiFi. `setBrightness()` forces the next push.
-  - Slide transition: `startTransition(TRANSITION_SLIDE_UP/DOWN)` stores the last frame, then `show()` slides the old frame out and the new one in over `TRANSITION_TIME` (350 ms, ease-out). Next app = up, back to clock = down.
+  - Slide transition: `startTransition(TRANSITION_SLIDE_UP/DOWN)` stores the last frame, then `show()` slides the old frame out and the new one in over `TRANSITION_TIME` (350 ms, ease-out). All app changes use SLIDE_DOWN (new screen falls from the top); SLIDE_UP is kept but unused.
   - Icon animation (`showAnimateIcon`) and loading animation (`showLoading`) are timed with `millis()`.
   - Icons live in `include/Icons.h` (8×8 frame arrays), font is `src/AwtrixFont.h`.
 - **OTA** (`src/Components/OTA.cpp`): custom `/update` page and upload handler on the existing AsyncWebServer using the core `Update` class (`Update.runAsync(true)`, because it runs in a web callback). ElegantOTA was not used because its async mode needs ESPAsyncWebServer ≥ 3.12 (ESP32Async fork), which conflicts with the me-no-dev version required by ESPAsyncWiFiManager. While an update runs, `main.cpp` skips apps and NTP and shows `Display::showUpdateProgress()` (text UPDATE + progress bar on row 7). Upload aborts after 15 s without data; restart 1 s after success. Flash layout is 4m1m (1 MB LittleFS), plenty of space for OTA.

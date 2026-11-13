@@ -190,14 +190,14 @@ void ApplicationManager::setup()
     changeSwitchViewAuto(config.data.view_auto_switch); 
 
     // Start first App
-    setApplication(new TimeApp(), TRANSITION_SLIDE_UP); // Logo slides out
+    setApplication(new TimeApp(), TRANSITION_SLIDE_DOWN); // Logo falls out
 }
 
 void ApplicationManager::showText(String showText)
 {
     canSwitchApp = false;
 
-    setApplication(new ShowTextApp(showText, true, 100, COLOR_WHITE), TRANSITION_SLIDE_UP);
+    setApplication(new ShowTextApp(showText, true, 100, COLOR_WHITE), TRANSITION_SLIDE_DOWN);
 }
 
 void ApplicationManager::showMainApp()
@@ -238,7 +238,7 @@ void ApplicationManager::nextApp(bool fromButton)
         resumeAutoSwitch();        
     }
     
-    setApplication(nextApplication, TRANSITION_SLIDE_UP);
+    setApplication(nextApplication, TRANSITION_SLIDE_DOWN);
 }   
 
 void ApplicationManager::loop()
